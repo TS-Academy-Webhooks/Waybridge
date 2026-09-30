@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ModeToggle } from "@/components/mode-toggle";
 import { formatDateTime } from "@/lib/format-date";
 import {
   SHIPMENT_STATUS_BADGE_VARIANT,
@@ -40,9 +39,6 @@ export default function TrackPage() {
 
   return (
     <div className="relative mx-auto flex w-full max-w-2xl flex-col gap-6 px-6 py-16">
-      <div className="absolute top-4 right-4">
-        <ModeToggle />
-      </div>
       <div className="text-center">
         <h1 className="text-3xl font-semibold tracking-tight">Track your shipment</h1>
         <p className="mt-2 text-muted-foreground">

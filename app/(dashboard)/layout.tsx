@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { Home } from "lucide-react";
 import { verifySession, getCurrentUser } from "@/lib/dal";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -48,7 +50,15 @@ export default async function DashboardLayout({
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-          <ModeToggle />
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" asChild title="Back to homepage">
+              <Link href="/">
+                <Home />
+                <span className="sr-only">Back to homepage</span>
+              </Link>
+            </Button>
+            <ModeToggle />
+          </div>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 pt-4 md:p-6">
           {children}

@@ -13,6 +13,7 @@ import {
 import { formatDateTime } from "@/lib/format-date";
 import { getDeliveries } from "@/lib/delivery-service";
 import { DELIVERY_STATUS_BADGE_VARIANT } from "@/constants/delivery-status";
+import { getPropertyOrValue } from "@/lib/utils";
 import { ResendDeliveryButton } from "./resend-delivery-button";
 
 export async function DeliveryTable({
@@ -55,9 +56,7 @@ export async function DeliveryTable({
               <TableRow key={delivery.id}>
                 <TableCell>
                   <Link href={`/deliveries/${delivery.id}`} className="hover:underline">
-                    {typeof delivery.webhook === "object"
-                      ? delivery?.webhook?.name ?? JSON.stringify(delivery.webhook)
-                      : delivery.webhook}
+                    {getPropertyOrValue(delivery.webhook, "name")}
                   </Link>
                 </TableCell>
                 <TableCell>

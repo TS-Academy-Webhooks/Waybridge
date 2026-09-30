@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { getDeliveries } from "@/lib/delivery-service";
 import { formatDateTime } from "@/lib/format-date";
 import { DELIVERY_STATUS_BADGE_VARIANT } from "@/constants/delivery-status";
+import { getPropertyOrValue } from "@/lib/utils";
 import { ResendDeliveryButton } from "@/features/deliveries/components/resend-delivery-button";
 
 export async function FailedDeliveries() {
@@ -26,7 +27,7 @@ export async function FailedDeliveries() {
               href={`/deliveries/${delivery.id}`}
               className="text-sm hover:underline"
             >
-              {typeof delivery.webhook === "object" && delivery.webhook !== null ? delivery.webhook.name : delivery.webhook}
+              {getPropertyOrValue(delivery.webhook, "name")}
             </Link>
             <span className="text-xs text-muted-foreground">
               {delivery.attemptCount}/{delivery.maxAttempts} attempts ·{" "}
