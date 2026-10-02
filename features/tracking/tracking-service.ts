@@ -2,7 +2,7 @@
 // Server-only, but deliberately NOT gated by the DAL — this is the one data
 // module that must work with no session, mirroring the backend's public
 // GET /api/tracking/:trackingNumber (no `protect` middleware in
-// backend-my-part/src/routes/tracking.routes.js).
+// waybridge-be/src/routes/trackingRoutes.js).
 import "server-only";
 import { API_BASE_URL } from "@/lib/api-config";
 import { parseApiError } from "@/lib/api-error";
@@ -44,5 +44,6 @@ export async function trackShipment(trackingNumber: string): Promise<TrackedShip
     throw new ApiRequestError(parsed.message, parsed.status, parsed.fieldErrors);
   }
 
-  return json.data as TrackedShipment;
+  const data = json.data as TrackedShipment & { lastUpdated?: string };
+  return { ...data, lastUpdate: data.lastUpdate ?? data.lastUpdated ?? "" };
 }

@@ -56,7 +56,7 @@ export async function DeliveryTable({
               <TableRow key={delivery.id}>
                 <TableCell>
                   <Link href={`/deliveries/${delivery.id}`} className="hover:underline">
-                    {getPropertyOrValue(delivery.webhook, "name")}
+                    {getPropertyOrValue(delivery.webhook, "name") ?? "Deleted webhook"}
                   </Link>
                 </TableCell>
                 <TableCell>

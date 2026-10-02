@@ -27,7 +27,7 @@ export async function FailedDeliveries() {
               href={`/deliveries/${delivery.id}`}
               className="text-sm hover:underline"
             >
-              {getPropertyOrValue(delivery.webhook, "name")}
+              {getPropertyOrValue(delivery.webhook, "name") ?? "Deleted webhook"}
             </Link>
             <span className="text-xs text-muted-foreground">
               {delivery.attemptCount}/{delivery.maxAttempts} attempts ·{" "}

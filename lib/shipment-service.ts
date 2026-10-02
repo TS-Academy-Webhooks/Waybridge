@@ -1,10 +1,9 @@
 // lib/shipment-service.ts
-// Server-only data layer for shipments — mirrors backend-my-part's
-// src/controllers/shipment.controller.js exactly:
-//   POST  /api/shipments             (admin/operations only)
+// Server-only data layer for shipments — uses the waybridge-be API:
+//   POST  /api/shipments             (admins and customers)
 //   GET   /api/shipments             (?page&limit&search&status)
 //   GET   /api/shipments/:id
-//   PATCH /api/shipments/:id/status  (admin/operations only)
+//   PATCH /api/shipments/:id/status  (admins)
 import "server-only";
 import { authFetch, buildQuery } from "./server-fetch";
 import type { Pagination } from "./webhook-service";
@@ -49,7 +48,7 @@ export async function getShipment(id: string): Promise<Shipment> {
 }
 
 export type CreateShipmentInput = {
-  customer: string;
+  customer?: string;
   origin: string;
   destination: string;
   amount: number;

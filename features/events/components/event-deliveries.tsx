@@ -38,9 +38,9 @@ export function EventDeliveries({ deliveries }: { deliveries: EventDelivery[] })
             <TableRow key={delivery.id}>
               <TableCell>
                 <Link href={`/deliveries/${delivery.id}`} className="hover:underline">
-                  {typeof delivery.webhook === "object"
+                  {delivery.webhook && typeof delivery.webhook === "object"
                     ? delivery.webhook.name
-                    : delivery.webhook}
+                                      : (delivery.webhook ?? "Deleted webhook")}
                 </Link>
               </TableCell>
               <TableCell>

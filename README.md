@@ -4,7 +4,7 @@ A full-stack logistics platform frontend: shipment management, a public
 customer-tracking page, an event/webhook delivery pipeline, and an admin
 dashboard — built on **Next.js 16 (App Router)**, **shadcn/ui**, **Radix UI**,
 **Tailwind CSS v4**, and **Motion**. It talks to a separate Express/MongoDB
-backend (`backend-my-part` in the sibling `webhooks` repo).
+backend in the sibling `waybridge-be` repo.
 
 This project replaces an earlier Vite + React Router SPA that only handled
 webhook CRUD. The rebuild keeps the same backend contract but moves auth and
@@ -37,7 +37,7 @@ pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The app expects a
+Open [http://localhost:5000](http://localhost:5000). The app expects a
 running backend (see [Backend dependency](#backend-dependency) below) —
 without it, every authenticated page will fail its server-side `fetch` calls.
 
@@ -46,7 +46,7 @@ without it, every authenticated page will fail its server-side `fetch` calls.
 Create `.env.local` (already gitignored):
 
 ```bash
-BACKEND_API_URL=http://localhost:5000/api
+BACKEND_API_URL=http://localhost:3000/api
 ```
 
 `BACKEND_API_URL` is **server-only** (read in `lib/api-config.ts`, never
@@ -74,48 +74,29 @@ history — see [Verification workflow](#verification-workflow).
 ## Backend dependency
 
 This frontend has **no backend code of its own**. It is a pure client of the
-Express API defined in the sibling `webhooks` repository, specifically
-`backend-my-part/`. To run the full stack locally:
+Express API defined in the sibling `waybridge-be/` repository. To run the
+full stack locally:
 
 ```bash
-cd ../webhooks/backend-my-part
-node src/app.js        # or `npm run dev` for nodemon
+cd ../waybridge-be
+npm run dev
 ```
 
-The backend needs its own `.env` with `MONGO_URI` and `JWT_SECRET` set (see
-that repo). It listens on port 5000 by default, matching this project's
-default `BACKEND_API_URL`.
+The backend needs its own `.env` configured as described in its README. It
+listens on port 3000 by default, matching this project's default
+`BACKEND_API_URL`.
 
-**Do not assume the roadmap document's API description is correct without
-checking.** Several details were wrong or incomplete when this frontend was
-built and had to be corrected by reading the actual controllers/routes/models
-in `backend-my-part/src/`:
+The frontend integrates with the merged API contract documented in
+`waybridge-be/API_MIGRATION.md`:
 
-- Webhooks: update is `PUT /api/webhooks/:id` (not PATCH).
-- Shipments: there is **no general update endpoint** — only
-  `PATCH /api/shipments/:id/status` for lifecycle transitions. Everything
-  else (customer, origin, destination, amount) is immutable after creation.
-- Events are **read-only**: `GET /api/events`, `GET /api/events/:id`. There is
-  no way to create an event directly; they're emitted internally when a
-  shipment's status changes.
-- Deliveries expose **two identical aliases** for retry:
-  `POST /api/deliveries/:id/resend` and `POST /api/deliveries/:id/retry`. This
-  frontend only calls `/resend`.
-- Delivery resend returns **HTTP 202** (queued), not a completed delivery —
-  the UI treats this as a "queued" toast, not an immediate success state.
-- Deliveries are **role-filtered server-side**: `admin` sees every delivery,
-  everyone else only sees deliveries belonging to their own webhooks. The
-  frontend does not replicate this logic — it just renders whatever the
-  backend returns for the current session.
-- The **demo receiver** (`/api/demo-receiver`, referenced by the old SPA's
-  "Use Demo Receiver" button) is **not implemented** in the current backend
-  drop (see that repo's README, point 5). The `/demo-receiver` page in this
-  app reflects that honestly: it shows the URL and an explicit "backend
-  support pending" notice rather than faking data.
+It supports customer-owned shipments, user-owned webhooks, shipment events,
+delivery retries, and the demo receiver. Refresh tokens are delivered as
+HttpOnly cookies; configure `BACKEND_API_URL` to the backend origin and use
+the documented auth/session flow rather than storing refresh tokens in
+browser-accessible storage.
 
-If the backend contract changes, don't just patch symptoms in the frontend —
-re-read the relevant controller/route/model file first, the same way this
-project's implementation history did track-by-track.
+If the backend contract changes, consult its migration guide and the
+corresponding route/controller before adjusting the frontend.
 
 ---
 
@@ -131,7 +112,7 @@ app/
     webhooks/              # list, detail, create, edit
     events/                # list, detail (+ deliveries triggered by the event)
     deliveries/             # list, detail (+ attempt history, resend)
-    demo-receiver/           # static info page (backend not implemented yet)
+    demo-receiver/           # demo receiver tools
     settings/                 # profile info + logout
   track/                # /track — public, no-auth customer tracking page
   layout.tsx, error.tsx  # root layout + root error boundary
@@ -332,7 +313,7 @@ using the same gate every time:
 
 ### Manual end-to-end smoke test
 
-With both the backend (`node src/app.js` in `backend-my-part/`) and this app
+With both the backend (`npm run dev` in `waybridge-be/`) and this app
 (`pnpm dev`) running:
 
 1. Register a user via `POST /api/auth/register`, then log in to get a JWT.

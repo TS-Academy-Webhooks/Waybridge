@@ -1,10 +1,9 @@
 // lib/webhook-service.ts
-// Server-only data layer for webhooks — mirrors backend-my-part's
-// src/controllers/webhook.controller.js exactly:
+// Server-only data layer for webhooks — uses the waybridge-be API:
 //   POST   /api/webhooks
 //   GET    /api/webhooks           (?page&limit&search&isActive&event)
 //   GET    /api/webhooks/:id
-//   PUT    /api/webhooks/:id       (partial body; NOT PATCH)
+//   PUT/PATCH /api/webhooks/:id    (partial body)
 //   DELETE /api/webhooks/:id
 //   GET    /api/webhooks/:id/deliveries
 //   POST   /api/webhooks/:id/test
@@ -40,7 +39,7 @@ export type WebhookListParams = {
 
 export type Delivery = {
   id: string;
-  event: { id: string; eventId: string; type: string };
+  event: { id: string; eventId: string; type: string } | null;
   webhook: string;
   user: string;
   status: "pending" | "success" | "failed";

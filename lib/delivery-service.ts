@@ -1,6 +1,5 @@
 // lib/delivery-service.ts
-// Server-only data layer for delivery logs — mirrors
-// backend-my-part's src/controllers/delivery.controller.js:
+// Server-only data layer for delivery logs — uses the waybridge-be API:
 //   GET  /api/deliveries               (?page&limit&status&webhookId&eventId&from&to)
 //   GET  /api/deliveries/:id           (includes { ...delivery, attempts })
 //   POST /api/deliveries/:id/resend    (202, re-queues; also aliased as /retry)
@@ -16,8 +15,8 @@ export type Delivery = {
   attemptCount: number;
   maxAttempts: number;
   lastAttemptAt?: string;
-  event: { id: string; eventId: string; type: string } | string;
-  webhook: { id: string; name: string; url: string } | string;
+  event: { id: string; eventId: string; type: string } | string | null;
+  webhook: { id: string; name: string; url: string } | string | null;
   createdAt: string;
   updatedAt: string;
 };

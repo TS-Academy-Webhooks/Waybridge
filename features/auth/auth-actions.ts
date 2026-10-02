@@ -6,6 +6,7 @@ import { createSession, deleteSession } from "@/lib/session";
 import { API_BASE_URL } from "@/lib/api-config";
 import { parseApiError, type FieldErrors } from "@/lib/api-error";
 import { loginFormSchema, registerFormSchema } from "@/lib/validate-auth";
+import { BACKEND_REFRESH_COOKIE_NAME, getBackendRefreshToken } from "@/lib/auth-constants";
 
 export type AuthActionState = {
   message?: string;
@@ -15,7 +16,7 @@ export type AuthActionState = {
 type AuthSuccessBody = {
   success: true;
   message: string;
-  data: { user: unknown; token: string };
+  data: { user: unknown; accessToken?: string; token?: string };
 };
 
 type AuthErrorBody = {
@@ -55,7 +56,17 @@ async function postAuth(
     return { ok: false, message: parsed.message, fieldErrors: parsed.fieldErrors };
   }
 
-  await createSession(json.data.token);
+  const accessToken = json.data.accessToken ?? json.data.token;
+  const refreshToken = getBackendRefreshToken(res.headers.get("set-cookie"));
+  if (!accessToken || !refreshToken) {
+    return {
+      ok: false,
+      message: "The server did not establish a complete session. Please try again.",
+      fieldErrors: {},
+    };
+  }
+
+  await createSession(accessToken, refreshToken);
   return { ok: true };
 }
 
@@ -111,7 +122,26 @@ export async function loginAction(
 }
 
 export async function logoutAction() {
-  await deleteSession();
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  const refreshToken = cookieStore.get("backend_refresh_token")?.value;
+  const accessToken = cookieStore.get("session_token")?.value;
+
+  try {
+    if (refreshToken) {
+      const backendCookieName = BACKEND_REFRESH_COOKIE_NAME;
+      await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: "POST",
+        headers: {
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+          Cookie: `${backendCookieName}=${refreshToken}`,
+        },
+        cache: "no-store",
+      });
+    }
+  } finally {
+    await deleteSession();
+  }
   redirect("/login");
 }
 

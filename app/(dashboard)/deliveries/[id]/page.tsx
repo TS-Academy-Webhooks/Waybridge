@@ -38,10 +38,10 @@ export default async function DeliveryDetailPage({
             {delivery.status}
           </Badge>
           <h1 className="text-2xl font-semibold tracking-tight">
-            {typeof delivery.webhook === "object" ? delivery.webhook.name : "Delivery"}
+            {delivery.webhook && typeof delivery.webhook === "object" ? delivery.webhook.name : "Delivery"}
           </h1>
           <p className="font-mono text-sm text-muted-foreground">
-            {typeof delivery.webhook === "object" ? delivery.webhook.url : delivery.webhook}
+            {delivery.webhook && typeof delivery.webhook === "object" ? delivery.webhook.url : (delivery.webhook ?? "Webhook deleted")}
           </p>
         </div>
         {delivery.status === "failed" ? (
@@ -58,12 +58,12 @@ export default async function DeliveryDetailPage({
           <div className="flex flex-col gap-1">
             <span className="text-sm font-medium">Event</span>
             <span className="text-sm text-muted-foreground">
-              {typeof delivery.event === "object" ? (
+              {delivery.event && typeof delivery.event === "object" ? (
                 <Link href={`/events/${delivery.event.id}`} className="hover:underline">
                   {delivery.event.type}
                 </Link>
               ) : (
-                delivery.event
+                (delivery.event ?? "—")
               )}
             </span>
           </div>

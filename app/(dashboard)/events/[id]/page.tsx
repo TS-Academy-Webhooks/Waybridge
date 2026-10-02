@@ -52,7 +52,7 @@ export default async function EventDetailPage({
           <div className="flex flex-col gap-1">
             <span className="text-sm font-medium">Shipment</span>
             <span className="text-sm text-muted-foreground">
-              {typeof event.shipment === "object" ? (
+              {event.shipment && typeof event.shipment === "object" ? (
                 <Link
                   href={`/shipments/${event.shipment.id}`}
                   className="font-mono hover:underline"
@@ -60,7 +60,7 @@ export default async function EventDetailPage({
                   {event.shipment.trackingNumber}
                 </Link>
               ) : (
-                event.shipment
+                (event.shipment ?? "—")
               )}
             </span>
           </div>

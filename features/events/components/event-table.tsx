@@ -1,4 +1,4 @@
-// features/events/components/event-table.tsx
+﻿// features/events/components/event-table.tsx
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -31,7 +31,6 @@ export async function EventTable({
       </p>
     );
   }
-
   return (
     <div className="flex flex-col gap-4">
       <div className="rounded-md border">
@@ -52,9 +51,9 @@ export async function EventTable({
                   </Link>
                 </TableCell>
                 <TableCell className="font-mono text-sm text-muted-foreground">
-                  {typeof event.shipment === "object"
+                  {event.shipment && typeof event.shipment === "object"
                     ? event.shipment.trackingNumber
-                    : event.shipment}
+                                      : (event.shipment ?? "—")}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {formatDateTime(event.createdAt)}

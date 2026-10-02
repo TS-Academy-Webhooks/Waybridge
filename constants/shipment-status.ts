@@ -1,6 +1,6 @@
 // constants/shipment-status.ts
 // Single source of truth for the shipment lifecycle, mirrored from
-// backend-my-part/src/utils/constants.js (SHIPMENT_STATUSES + VALID_TRANSITIONS).
+// waybridge-be/src/services/shipmentService.js.
 // Shared by the public tracking page, the shipment management pages (Track C),
 // and webhook event selection (constants/webhook-events.ts).
 
@@ -25,14 +25,13 @@ export const SHIPMENT_STATUSES: ShipmentStatus[] = [
   "cancelled",
 ];
 
-// Mirrors backend-my-part/src/utils/constants.js VALID_TRANSITIONS exactly,
-// including the delivery_failed -> out_for_delivery retry path.
+// Mirrors the merged backend's transition map exactly.
 export const VALID_TRANSITIONS: Record<ShipmentStatus, ShipmentStatus[]> = {
   created: ["picked_up", "cancelled"],
   picked_up: ["in_transit", "cancelled"],
   in_transit: ["arrived_at_hub", "cancelled"],
-  arrived_at_hub: ["out_for_delivery", "cancelled"],
-  out_for_delivery: ["delivered", "delivery_failed", "cancelled"],
+  arrived_at_hub: ["in_transit", "out_for_delivery", "cancelled"],
+  out_for_delivery: ["delivered", "delivery_failed"],
   delivery_failed: ["out_for_delivery", "cancelled"], // retry redelivery
   delivered: [],
   cancelled: [],

@@ -39,7 +39,7 @@ export async function DeliveryLogTable({ webhookId }: { webhookId: string }) {
         <TableBody>
           {items.map((delivery) => (
             <TableRow key={delivery.id}>
-              <TableCell>{formatEventType(delivery.event.type)}</TableCell>
+              <TableCell>{delivery.event?.type ? formatEventType(delivery.event.type) : "—"}</TableCell>
               <TableCell>
                 <Badge variant={DELIVERY_STATUS_BADGE_VARIANT[delivery.status] ?? "secondary"}>
                   {delivery.status}

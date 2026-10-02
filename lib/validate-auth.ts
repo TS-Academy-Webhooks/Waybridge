@@ -1,6 +1,6 @@
 // lib/validate-auth.ts
-// Mirrors backend-my-part/src/models/User.js validation exactly (name >= 2
-// chars, email format, password >= 8 chars) so users get the same feedback
+// Mirrors the merged backend validation (name 2-60 chars, password >= 12)
+// so users get the same feedback
 // before hitting the network, while the backend remains the source of truth.
 import { z } from "zod";
 
@@ -13,7 +13,7 @@ export const registerFormSchema = z
   .object({
     name: z.string().trim().min(2, "Name must be at least 2 characters"),
     email: z.string().trim().min(1, "Email is required").email("Enter a valid email"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    password: z.string().min(12, "Password must be at least 12 characters"),
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {

@@ -13,9 +13,10 @@ import { API_BASE_URL } from "./api-config";
 
 export type SessionUser = {
   id: string;
+  _id?: string;
   name: string;
   email: string;
-  role: "admin" | "operations" | "merchant" | "user";
+  role: "admin" | "customer";
 };
 
 // Optimistic-only note: this checks for the cookie's *presence*, matching
@@ -49,7 +50,17 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
     });
     const json = await res.json().catch(() => null);
     if (!res.ok || !json?.success) return null;
-    return json.data as SessionUser;
+    const user = json.data?.user ?? json.data;
+    if (
+      !user ||
+      typeof user.id !== "string" ||
+      typeof user.name !== "string" ||
+      typeof user.email !== "string" ||
+      (user.role !== "admin" && user.role !== "customer")
+    ) {
+      return null;
+    }
+    return user as SessionUser;
   } catch {
     return null;
   }
