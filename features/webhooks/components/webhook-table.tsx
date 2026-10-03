@@ -1,5 +1,6 @@
 // features/webhooks/components/webhook-table.tsx
 import Link from "next/link";
+import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -7,8 +8,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatDate } from "@/lib/format-date";
 import { getWebhooks } from "@/lib/webhook-service";
+import { DeleteWebhookDialog } from "@/features/webhooks/components/delete-webhook-dialog";
+import { EventBadges } from "@/features/webhooks/components/event-badges";
 import { WebhookRows } from "@/features/webhooks/components/webhook-rows";
+import { WebhookStatus } from "@/features/webhooks/components/webhook-status";
 
 export async function WebhookTable({
   search,
@@ -44,7 +49,49 @@ export async function WebhookTable({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-md border">
+      <ul className="grid gap-3 xl:hidden">
+        {items.map((webhook) => (
+          <li key={webhook.id} className="rounded-md border bg-card p-4">
+            <div className="min-w-0">
+              <Link
+                href={`/webhooks/${webhook.id}`}
+                className="break-words font-medium hover:underline"
+              >
+                {webhook.name}
+              </Link>
+              <p className="mt-1 break-all font-mono text-xs text-muted-foreground">
+                {webhook.url}
+              </p>
+            </div>
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <WebhookStatus id={webhook.id} isActive={webhook.isActive} />
+              <span className="shrink-0 text-xs text-muted-foreground">
+                Created {formatDate(webhook.createdAt)}
+              </span>
+            </div>
+            <div className="mt-3">
+              <p className="mb-1 text-xs font-medium text-muted-foreground">
+                Subscribed events
+              </p>
+              <EventBadges events={webhook.events} />
+            </div>
+            <div className="mt-3 flex justify-end gap-2">
+              <Button
+                asChild
+                variant="outline"
+                size="icon"
+                aria-label={`Edit ${webhook.name}`}
+              >
+                <Link href={`/webhooks/${webhook.id}/edit`}>
+                  <Pencil />
+                </Link>
+              </Button>
+              <DeleteWebhookDialog id={webhook.id} name={webhook.name} />
+            </div>
+          </li>
+        ))}
+      </ul>
+      <div className="hidden rounded-md border xl:block">
         <Table>
           <TableHeader>
             <TableRow>

@@ -40,7 +40,49 @@ export async function DeliveryTable({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-md border">
+      <ul className="grid gap-3 xl:hidden">
+        {items.map((delivery) => (
+          <li key={delivery.id} className="rounded-md border bg-card p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">Webhook</p>
+                <Link
+                  href={`/deliveries/${delivery.id}`}
+                  className="break-words font-medium hover:underline"
+                >
+                  {getPropertyOrValue(delivery.webhook, "name") ?? "Deleted webhook"}
+                </Link>
+              </div>
+              <Badge
+                variant={DELIVERY_STATUS_BADGE_VARIANT[delivery.status]}
+                className="shrink-0"
+              >
+                {delivery.status}
+              </Badge>
+            </div>
+            <dl className="mt-3 grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <dt className="text-xs text-muted-foreground">Attempts</dt>
+                <dd className="mt-1 text-muted-foreground">
+                  {delivery.attemptCount}/{delivery.maxAttempts}
+                </dd>
+              </div>
+              <div className="min-w-0">
+                <dt className="text-xs text-muted-foreground">Last attempt</dt>
+                <dd className="mt-1 break-words text-muted-foreground">
+                  {formatDateTime(delivery.lastAttemptAt)}
+                </dd>
+              </div>
+            </dl>
+            {delivery.status === "failed" ? (
+              <div className="mt-3 flex justify-end">
+                <ResendDeliveryButton deliveryId={delivery.id} />
+              </div>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+      <div className="hidden rounded-md border xl:block">
         <Table>
           <TableHeader>
             <TableRow>

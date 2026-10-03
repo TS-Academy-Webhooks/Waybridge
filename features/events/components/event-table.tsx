@@ -36,7 +36,29 @@ export async function EventTable({
   }
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-md border">
+      <ul className="grid gap-3 xl:hidden">
+        {items.map((event) => (
+          <li key={event.id} className="rounded-md border bg-card p-4">
+            <div className="flex flex-col gap-2">
+              <Link href={`/events/${event.id}`} className="w-fit hover:underline">
+                <Badge variant="secondary">{formatEventType(event.type)}</Badge>
+              </Link>
+              <p className="text-xs text-muted-foreground">
+                Occurred {formatDateTime(event.createdAt)}
+              </p>
+            </div>
+            <div className="mt-3">
+              <p className="text-xs text-muted-foreground">Shipment</p>
+              <p className="mt-1 break-all font-mono text-sm text-muted-foreground">
+                {event.shipment && typeof event.shipment === "object"
+                  ? event.shipment.trackingNumber
+                  : (event.shipment ?? "—")}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <div className="hidden rounded-md border xl:block">
         <Table>
           <TableHeader>
             <TableRow>

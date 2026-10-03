@@ -16,14 +16,14 @@ export default async function ShipmentsPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex flex-col items-start gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
           <h1 className="text-2xl font-semibold tracking-tight">Shipments</h1>
           <p className="text-muted-foreground">
             Track and manage shipments across their lifecycle.
           </p>
         </div>
-        <Button asChild>
+        <Button asChild className="w-full lg:w-auto">
           <Link href="/shipments/new">
             <Plus />
             New shipment
