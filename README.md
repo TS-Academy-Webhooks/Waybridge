@@ -43,7 +43,7 @@ without it, every authenticated page will fail its server-side `fetch` calls.
 
 ### Environment variables
 
-Create `.env.local` (already gitignored):
+Create `.env` (already gitignored):
 
 ```bash
 BACKEND_API_URL=http://localhost:5000/api
