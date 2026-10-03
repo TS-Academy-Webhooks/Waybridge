@@ -11,13 +11,16 @@ import "server-only";
 import { authFetch, buildQuery } from "./server-fetch";
 
 export type Webhook = {
+  _id?: string;
   id: string;
+  ownerId?: string;
   user: string;
   name: string;
   url: string;
   secret: string; // full secret only on create / regenerateSecret; masked otherwise
   events: string[];
   isActive: boolean;
+  active?: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -26,6 +29,7 @@ export type Pagination = {
   page: number;
   limit: number;
   total: number;
+  totalItems?: number;
   totalPages: number;
 };
 

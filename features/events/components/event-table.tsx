@@ -12,16 +12,19 @@ import {
 import { formatDateTime } from "@/lib/format-date";
 import { formatEventType } from "@/lib/format-event-type";
 import { getEvents } from "@/lib/event-service";
+import type { EventType } from "@/constants/event-types";
 import { Button } from "@/components/ui/button";
 
 export async function EventTable({
   type,
+  search,
   page,
 }: {
-  type?: string;
+  type?: EventType;
+  search?: string;
   page?: number;
 }) {
-  const { items, pagination } = await getEvents({ type, page, limit: 15 });
+  const { items, pagination } = await getEvents({ type, search, page, limit: 15 });
 
   if (items.length === 0) {
     return (
@@ -63,7 +66,7 @@ export async function EventTable({
           </TableBody>
         </Table>
       </div>
-      <PaginationBar pagination={pagination} type={type} />
+      <PaginationBar pagination={pagination} type={type} search={search} />
     </div>
   );
 }
@@ -71,15 +74,18 @@ export async function EventTable({
 function PaginationBar({
   pagination,
   type,
+  search,
 }: {
   pagination: { page: number; totalPages: number };
   type?: string;
+  search?: string;
 }) {
   if (pagination.totalPages <= 1) return null;
 
   function hrefFor(page: number) {
     const params = new URLSearchParams();
     if (type) params.set("type", type);
+    if (search) params.set("search", search);
     params.set("page", String(page));
     return `/events?${params.toString()}`;
   }

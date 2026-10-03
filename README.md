@@ -87,13 +87,20 @@ listens on port 5000 by default; this project's default `BACKEND_API_URL`
 targets that port.
 
 The frontend integrates with the merged API contract documented in
-`../davinci/API_MIGRATION.md`:
+`../davinci/openapi.yaml` and summarized in `../davinci/API_MIGRATION.md`.
+When the backend is running locally, its interactive API reference is at
+[http://localhost:5000/docs](http://localhost:5000/docs).
 
-It supports customer-owned shipments, user-owned webhooks, shipment events,
-delivery retries, and the demo receiver. Refresh tokens are delivered as
+It supports customer-owned shipments, user-owned webhooks, admin-only event
+views, delivery summaries and retries, and the demo receiver. Refresh tokens are delivered as
 HttpOnly cookies; configure `BACKEND_API_URL` to the backend origin and use
 the documented auth/session flow rather than storing refresh tokens in
 browser-accessible storage.
+
+The backend issues registration's access token as `data.token`; login and
+refresh return both `data.accessToken` and the compatible `data.token` alias.
+Event list/detail endpoints require an admin account; customer shipment,
+webhook, and delivery data is scoped to its owner.
 
 The `/demo-receiver` page is integrated with the backend receiver API. Webhook
 POSTs go to the public receiver URL; request inspection, clearing, and response

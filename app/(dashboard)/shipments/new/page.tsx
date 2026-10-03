@@ -1,6 +1,8 @@
 import { ShipmentForm } from "@/features/shipments/components/shipment-form";
+import { getCurrentUser } from "@/lib/dal";
 
-export default function NewShipmentPage() {
+export default async function NewShipmentPage() {
+  const user = await getCurrentUser();
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -9,7 +11,7 @@ export default function NewShipmentPage() {
           Create a shipment and get a tracking number for it.
         </p>
       </div>
-      <ShipmentForm />
+      <ShipmentForm isAdmin={user?.role === "admin"} />
     </div>
   );
 }

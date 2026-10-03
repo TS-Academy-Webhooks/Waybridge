@@ -23,7 +23,7 @@ import {
   type ShipmentFormValues,
 } from "@/lib/validate-shipment";
 
-export function ShipmentForm() {
+export function ShipmentForm({ isAdmin }: { isAdmin: boolean }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -50,19 +50,21 @@ export function ShipmentForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex max-w-xl flex-col gap-6">
-        <FormField
-          control={form.control}
-          name="customer"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Customer</FormLabel>
-              <FormControl>
-                <Input placeholder="Acme Corp" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {isAdmin ? (
+          <FormField
+            control={form.control}
+            name="customer"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Customer</FormLabel>
+                <FormControl>
+                  <Input placeholder="Acme Corp" {...field} required />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ) : null}
         <FormField
           control={form.control}
           name="origin"

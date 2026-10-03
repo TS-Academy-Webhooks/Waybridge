@@ -16,8 +16,9 @@ export default async function DeliveriesPage({
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Deliveries</h1>
         <p className="text-muted-foreground">
-          Every webhook delivery attempt across your endpoints. Resend failed
-          deliveries once you&apos;ve fixed the issue.
+          Every webhook delivery summary across your endpoints, with its
+          individual attempts. Resend failed deliveries once you&apos;ve fixed
+          the issue.
         </p>
       </div>
       <DeliveryFilters />

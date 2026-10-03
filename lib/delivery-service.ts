@@ -1,6 +1,6 @@
 // lib/delivery-service.ts
 // Server-only data layer for delivery logs — uses the waybridge-be API:
-//   GET  /api/deliveries               (?page&limit&status&webhookId&eventId&from&to)
+//   GET  /api/deliveries               (?page&limit&status&webhookId&eventId)
 //   GET  /api/deliveries/:id           (includes { ...delivery, attempts })
 //   POST /api/deliveries/:id/resend    (202, re-queues; also aliased as /retry)
 import "server-only";
@@ -9,28 +9,66 @@ import type { Pagination } from "./webhook-service";
 
 export type DeliveryStatus = "pending" | "success" | "failed";
 
+export type DeliveryReference = {
+  id?: string;
+  _id?: string;
+  eventId?: string;
+  type?: string;
+  name?: string;
+  url?: string;
+  payload?: Record<string, unknown>;
+};
+
 export type Delivery = {
+  _id?: string;
   id: string;
   status: DeliveryStatus;
   attemptCount: number;
   maxAttempts: number;
-  lastAttemptAt?: string;
-  event: { id: string; eventId: string; type: string } | string | null;
-  webhook: { id: string; name: string; url: string } | string | null;
+  lastAttemptAt?: string | null;
+  eventId?: DeliveryReference | string;
+  webhookId?: DeliveryReference | string;
+  ownerId?: string;
+  event?: DeliveryReference | string | null;
+  webhook?: DeliveryReference | string | null;
   createdAt: string;
   updatedAt: string;
 };
 
 export type DeliveryAttempt = {
-  id: string;
+  _id?: string;
+  id?: string;
+  deliveryId?: string | null;
+  webhookId?: DeliveryReference | string;
+  eventId?: DeliveryReference | string;
   attemptNumber: number;
   status: "success" | "failed";
-  statusCode: number | null;
-  responseBody: string | null;
+  httpStatus?: number | null;
+  statusCode?: number | null;
+  response?: string | null;
+  responseBody?: string | null;
   errorMessage: string | null;
-  durationMs: number | null;
+  duration?: number | null;
+  durationMs?: number | null;
+  attemptedAt?: string;
   createdAt: string;
+  updatedAt?: string;
 };
+
+export type DeliveryDetail =
+  | (Delivery & { attempts: DeliveryAttempt[] })
+  | LegacyDeliveryAttempt;
+
+export type LegacyDeliveryAttempt = DeliveryAttempt & {
+  delivery: null;
+  attempts: DeliveryAttempt[];
+};
+
+export function isLegacyDeliveryAttempt(
+  delivery: DeliveryDetail
+): delivery is LegacyDeliveryAttempt {
+  return "delivery" in delivery && delivery.delivery === null;
+}
 
 export type DeliveryListParams = {
   page?: number;
@@ -38,8 +76,6 @@ export type DeliveryListParams = {
   status?: DeliveryStatus;
   webhookId?: string;
   eventId?: string;
-  from?: string;
-  to?: string;
 };
 
 export async function getDeliveries(
@@ -51,7 +87,7 @@ export async function getDeliveries(
 
 export async function getDelivery(
   id: string
-): Promise<Delivery & { attempts: DeliveryAttempt[] }> {
+): Promise<DeliveryDetail> {
   return authFetch(`/deliveries/${id}`);
 }
 

@@ -11,7 +11,10 @@ export const loginFormSchema = z.object({
 
 export const registerFormSchema = z
   .object({
-    name: z.string().trim().min(2, "Name must be at least 2 characters"),
+    name: z.string()
+      .trim()
+      .min(2, "Name must be at least 2 characters")
+      .max(60, "Name must be 60 characters or fewer"),
     email: z.string().trim().min(1, "Email is required").email("Enter a valid email"),
     password: z.string().min(12, "Password must be at least 12 characters"),
     confirmPassword: z.string().min(1, "Please confirm your password"),

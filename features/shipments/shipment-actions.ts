@@ -11,6 +11,7 @@ import {
 import { shipmentFormSchema, type ShipmentFormValues } from "@/lib/validate-shipment";
 import { isValidTransition, type ShipmentStatus } from "@/constants/shipment-status";
 import type { FieldErrors } from "@/lib/api-error";
+import { getCurrentUser } from "@/lib/dal";
 
 export type ActionResult<T = null> =
   | { success: true; data: T }
@@ -29,7 +30,18 @@ export async function createShipmentAction(
   }
 
   try {
-    const input: CreateShipmentInput = parsed.data;
+    const user = await getCurrentUser();
+    if (user?.role === "admin" && !parsed.data.customer.trim()) {
+      return {
+        success: false,
+        message: "Please fix the highlighted fields.",
+        fieldErrors: { customer: "Customer is required for admin-created shipments." },
+      };
+    }
+    const input: CreateShipmentInput = {
+      ...parsed.data,
+      customer: user?.role === "customer" ? undefined : parsed.data.customer,
+    };
     const shipment = await createShipment(input);
     refresh();
     return { success: true, data: { id: shipment.id, trackingNumber: shipment.trackingNumber } };

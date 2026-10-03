@@ -7,7 +7,7 @@
 // call verifySession()/getCurrentUser() and pass plain data down as props.
 import "server-only";
 import { cache } from "react";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getSessionToken } from "./session";
 import { API_BASE_URL } from "./api-config";
 
@@ -65,3 +65,12 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
     return null;
   }
 });
+
+export async function requireAdmin(): Promise<SessionUser> {
+  const user = await getCurrentUser();
+  if (!user || user.role !== "admin") {
+    if (user) redirect("/dashboard");
+    notFound();
+  }
+  return user;
+}

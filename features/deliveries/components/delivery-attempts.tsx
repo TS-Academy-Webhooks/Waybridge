@@ -36,7 +36,7 @@ export function DeliveryAttempts({ attempts }: { attempts: DeliveryAttempt[] }) 
         </TableHeader>
         <TableBody>
           {attempts.map((attempt) => (
-            <TableRow key={attempt.id}>
+            <TableRow key={attempt.id ?? attempt._id ?? attempt.attemptNumber}>
               <TableCell className="text-muted-foreground">{attempt.attemptNumber}</TableCell>
               <TableCell>
                 <Badge variant={DELIVERY_STATUS_BADGE_VARIANT[attempt.status]}>
@@ -44,16 +44,18 @@ export function DeliveryAttempts({ attempts }: { attempts: DeliveryAttempt[] }) 
                 </Badge>
               </TableCell>
               <TableCell className="font-mono text-sm">
-                {attempt.statusCode ?? "—"}
+                {attempt.httpStatus ?? attempt.statusCode ?? "—"}
               </TableCell>
               <TableCell className="text-muted-foreground">
-                {attempt.durationMs != null ? `${attempt.durationMs}ms` : "—"}
+                {(attempt.duration ?? attempt.durationMs) != null
+                  ? `${attempt.duration ?? attempt.durationMs}ms`
+                  : "—"}
               </TableCell>
               <TableCell className="text-muted-foreground">
-                {formatDateTime(attempt.createdAt)}
+                {formatDateTime(attempt.attemptedAt ?? attempt.createdAt)}
               </TableCell>
               <TableCell className="max-w-64 truncate text-sm text-muted-foreground">
-                {attempt.errorMessage ?? attempt.responseBody ?? "—"}
+                {attempt.errorMessage ?? attempt.response ?? attempt.responseBody ?? "—"}
               </TableCell>
             </TableRow>
           ))}

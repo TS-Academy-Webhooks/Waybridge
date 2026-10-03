@@ -100,7 +100,7 @@ export function WebhookForm(props: WebhookFormProps) {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Order fulfillment notifier" {...field} />
+                  <Input placeholder="Order fulfillment notifier" maxLength={80} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

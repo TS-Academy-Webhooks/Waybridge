@@ -6,7 +6,12 @@ import { createSession, deleteSession } from "@/lib/session";
 import { API_BASE_URL } from "@/lib/api-config";
 import { parseApiError, type FieldErrors } from "@/lib/api-error";
 import { loginFormSchema, registerFormSchema } from "@/lib/validate-auth";
-import { BACKEND_REFRESH_COOKIE_NAME, getBackendRefreshToken } from "@/lib/auth-constants";
+import {
+  BACKEND_REFRESH_COOKIE,
+  BACKEND_REFRESH_COOKIE_NAME,
+  getBackendRefreshToken,
+  SESSION_COOKIE,
+} from "@/lib/auth-constants";
 
 export type AuthActionState = {
   message?: string;
@@ -58,7 +63,7 @@ async function postAuth(
 
   const accessToken = json.data.accessToken ?? json.data.token;
   const refreshToken = getBackendRefreshToken(res.headers.get("set-cookie"));
-  if (!accessToken || !refreshToken) {
+  if (typeof accessToken !== "string" || !accessToken || !refreshToken) {
     return {
       ok: false,
       message: "The server did not establish a complete session. Please try again.",
@@ -124,13 +129,13 @@ export async function loginAction(
 export async function logoutAction() {
   const { cookies } = await import("next/headers");
   const cookieStore = await cookies();
-  const refreshToken = cookieStore.get("backend_refresh_token")?.value;
-  const accessToken = cookieStore.get("session_token")?.value;
+  const refreshToken = cookieStore.get(BACKEND_REFRESH_COOKIE)?.value;
+  const accessToken = cookieStore.get(SESSION_COOKIE)?.value;
 
   try {
     if (refreshToken) {
       const backendCookieName = BACKEND_REFRESH_COOKIE_NAME;
-      await fetch(`${API_BASE_URL}/auth/logout`, {
+      const response = await fetch(`${API_BASE_URL}/auth/logout`, {
         method: "POST",
         headers: {
           ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
@@ -138,7 +143,12 @@ export async function logoutAction() {
         },
         cache: "no-store",
       });
+      if (!response.ok) {
+        console.error(`Backend logout returned HTTP ${response.status}; clearing the local session.`);
+      }
     }
+  } catch {
+    console.error("Backend logout request failed; clearing the local session.");
   } finally {
     await deleteSession();
   }

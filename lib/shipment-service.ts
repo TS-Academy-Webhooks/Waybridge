@@ -11,20 +11,29 @@ import type { ShipmentStatus } from "@/constants/shipment-status";
 
 export type ShipmentTimelineEntry = {
   status: ShipmentStatus;
-  note?: string;
+  note?: string | null;
   at: string;
+  timestamp?: string;
+};
+
+export type ShipmentStatusHistoryEntry = {
+  status: ShipmentStatus;
+  timestamp: string;
+  note?: string | null;
 };
 
 export type Shipment = {
+  _id?: string;
   id: string;
   trackingNumber: string;
   customer: string;
+  customerId?: string | null;
   origin: string;
   destination: string;
   amount: number;
   status: ShipmentStatus;
+  statusHistory?: ShipmentStatusHistoryEntry[];
   timeline: ShipmentTimelineEntry[];
-  createdBy?: string;
   createdAt: string;
   updatedAt: string;
 };

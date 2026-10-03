@@ -34,7 +34,7 @@ export default function SignupPage() {
           )}
           <div className="flex flex-col gap-2">
             <Label htmlFor="name">Name</Label>
-            <Input id="name" name="name" autoComplete="name" required />
+            <Input id="name" name="name" autoComplete="name" minLength={2} maxLength={60} required />
             {state?.fieldErrors?.name && (
               <p className="text-sm text-destructive">{state.fieldErrors.name}</p>
             )}
@@ -53,6 +53,7 @@ export default function SignupPage() {
               name="password"
               type="password"
               autoComplete="new-password"
+              minLength={12}
               required
             />
             {state?.fieldErrors?.password && (

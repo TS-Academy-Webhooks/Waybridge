@@ -81,7 +81,7 @@ export default async function WebhookDetailPage({
         <CardHeader>
           <CardTitle>Recent deliveries</CardTitle>
           <CardDescription>
-            The last 5 delivery attempts for this webhook.
+            The last 5 delivery summaries and their attempt counts.
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -12,6 +12,7 @@ import { formatDateTime } from "@/lib/format-date";
 import { formatEventType } from "@/lib/format-event-type";
 import { getEvent } from "@/lib/event-service";
 import { ApiRequestError } from "@/lib/server-fetch";
+import { requireAdmin } from "@/lib/dal";
 import { EventDeliveries } from "@/features/events/components/event-deliveries";
 
 export default async function EventDetailPage({
@@ -19,6 +20,7 @@ export default async function EventDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAdmin();
   const { id } = await params;
 
   let event, deliveries;
@@ -28,6 +30,10 @@ export default async function EventDetailPage({
     if (error instanceof ApiRequestError && error.status === 404) notFound();
     throw error;
   }
+  const shipment = event.shipment && typeof event.shipment === "object"
+    ? event.shipment
+    : null;
+  const shipmentId = shipment?.id ?? shipment?._id;
 
   return (
     <div className="flex flex-col gap-6">
@@ -52,15 +58,16 @@ export default async function EventDetailPage({
           <div className="flex flex-col gap-1">
             <span className="text-sm font-medium">Shipment</span>
             <span className="text-sm text-muted-foreground">
-              {event.shipment && typeof event.shipment === "object" ? (
+              {shipment && shipmentId ? (
                 <Link
-                  href={`/shipments/${event.shipment.id}`}
+                  href={`/shipments/${shipmentId}`}
                   className="font-mono hover:underline"
                 >
-                  {event.shipment.trackingNumber}
+                  {shipment.trackingNumber}
                 </Link>
               ) : (
-                (event.shipment ?? "—")
+                (shipment?.trackingNumber ??
+                  (typeof event.shipment === "string" ? event.shipment : "—"))
               )}
             </span>
           </div>

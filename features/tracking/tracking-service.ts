@@ -11,6 +11,8 @@ import { ApiRequestError } from "@/lib/server-fetch";
 export type TimelineEntry = {
   status: string;
   at: string;
+  timestamp?: string;
+  note?: string | null;
 };
 
 export type TrackedShipment = {
@@ -18,6 +20,7 @@ export type TrackedShipment = {
   status: string;
   origin: string;
   destination: string;
+  lastUpdated: string;
   lastUpdate: string;
   timeline: TimelineEntry[];
 };
@@ -44,6 +47,10 @@ export async function trackShipment(trackingNumber: string): Promise<TrackedShip
     throw new ApiRequestError(parsed.message, parsed.status, parsed.fieldErrors);
   }
 
-  const data = json.data as TrackedShipment & { lastUpdated?: string };
-  return { ...data, lastUpdate: data.lastUpdate ?? data.lastUpdated ?? "" };
+  const data = json.data as Omit<TrackedShipment, "lastUpdated" | "lastUpdate"> & {
+    lastUpdated?: string;
+    lastUpdate?: string;
+  };
+  const lastUpdated = data.lastUpdated ?? data.lastUpdate ?? "";
+  return { ...data, lastUpdated, lastUpdate: lastUpdated };
 }

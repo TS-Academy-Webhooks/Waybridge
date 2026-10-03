@@ -8,6 +8,8 @@ import { formatShipmentStatus } from "@/constants/shipment-status";
 export type TimelineEntry = {
   status: string;
   at: string;
+  timestamp?: string;
+  note?: string | null;
 };
 
 export function ShipmentTimeline({ entries }: { entries: TimelineEntry[] }) {
@@ -26,8 +28,9 @@ export function ShipmentTimeline({ entries }: { entries: TimelineEntry[] }) {
       {ordered.map((entry, index) => {
         const isLast = index === ordered.length - 1;
         const isCurrent = index === 0;
-        return (
-          <li key={`${entry.status}-${entry.at}`} className="relative flex gap-3 pb-0">
+          const at = entry.at ?? entry.timestamp ?? "";
+          return (
+            <li key={`${entry.status}-${at}`} className="relative flex gap-3 pb-0">
             <div className="flex flex-col items-center">
               {isCurrent ? (
                 <CheckCircle2 className="size-5 shrink-0 text-primary" />
@@ -39,8 +42,11 @@ export function ShipmentTimeline({ entries }: { entries: TimelineEntry[] }) {
             <div className="flex flex-col gap-0.5 pb-6">
               <span className="font-medium">{formatShipmentStatus(entry.status)}</span>
               <span className="text-sm text-muted-foreground">
-                {formatDateTime(entry.at)}
+                {formatDateTime(at)}
               </span>
+              {entry.note ? (
+                <span className="text-sm text-muted-foreground">{entry.note}</span>
+              ) : null}
             </div>
           </li>
         );

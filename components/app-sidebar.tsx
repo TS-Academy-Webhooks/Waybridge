@@ -30,7 +30,7 @@ const NAV_ITEMS = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Shipments", url: "/shipments", icon: Package },
   { title: "Webhooks", url: "/webhooks", icon: Webhook },
-  { title: "Events", url: "/events", icon: Activity },
+  { title: "Events", url: "/events", icon: Activity, adminOnly: true },
   { title: "Deliveries", url: "/deliveries", icon: SendHorizonal },
 ];
 
@@ -68,7 +68,7 @@ export function AppSidebar({ user }: { user: SessionUser | null }) {
           <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {NAV_ITEMS.map((item) => {
+              {NAV_ITEMS.filter((item) => !item.adminOnly || user?.role === "admin").map((item) => {
                 const isActive = pathname.startsWith(item.url);
                 return (
                   <SidebarMenuItem key={item.url}>

@@ -9,11 +9,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { formatDateTime } from "@/lib/format-date";
-import { getDelivery } from "@/lib/delivery-service";
+import { getDelivery, isLegacyDeliveryAttempt } from "@/lib/delivery-service";
 import { ApiRequestError } from "@/lib/server-fetch";
 import { DELIVERY_STATUS_BADGE_VARIANT } from "@/constants/delivery-status";
 import { DeliveryAttempts } from "@/features/deliveries/components/delivery-attempts";
 import { ResendDeliveryButton } from "@/features/deliveries/components/resend-delivery-button";
+import { getCurrentUser } from "@/lib/dal";
 
 export default async function DeliveryDetailPage({
   params,
@@ -21,6 +22,7 @@ export default async function DeliveryDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const user = await getCurrentUser();
 
   let delivery;
   try {
@@ -30,6 +32,29 @@ export default async function DeliveryDetailPage({
     throw error;
   }
 
+  const details = isLegacyDeliveryAttempt(delivery)
+    ? {
+        kind: "historical" as const,
+        webhook: delivery.webhookId,
+        event: delivery.eventId,
+        attemptsLabel: `Historical attempt ${delivery.attemptNumber}`,
+        lastAttemptAt: delivery.attemptedAt ?? delivery.createdAt,
+      }
+    : {
+        kind: "delivery" as const,
+        webhook: delivery.webhook,
+        event: delivery.event,
+        attemptsLabel: `${delivery.attemptCount}/${delivery.maxAttempts}`,
+        lastAttemptAt: delivery.lastAttemptAt,
+      };
+  const deliveryId = delivery.id ?? delivery._id ?? id;
+  const eventId = details.event && typeof details.event === "object"
+    ? details.event.id ?? details.event._id
+    : undefined;
+  const eventLabel = details.event && typeof details.event === "object"
+    ? details.event.type ?? details.event.eventId ?? "—"
+    : details.event ?? "—";
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-start justify-between gap-4">
@@ -38,14 +63,16 @@ export default async function DeliveryDetailPage({
             {delivery.status}
           </Badge>
           <h1 className="text-2xl font-semibold tracking-tight">
-            {delivery.webhook && typeof delivery.webhook === "object" ? delivery.webhook.name : "Delivery"}
+            {details.webhook && typeof details.webhook === "object" ? details.webhook.name : "Delivery"}
           </h1>
           <p className="font-mono text-sm text-muted-foreground">
-            {delivery.webhook && typeof delivery.webhook === "object" ? delivery.webhook.url : (delivery.webhook ?? "Webhook deleted")}
+            {details.webhook && typeof details.webhook === "object"
+              ? details.webhook.url
+              : (details.webhook ?? "Webhook deleted")}
           </p>
         </div>
         {delivery.status === "failed" ? (
-          <ResendDeliveryButton deliveryId={delivery.id} />
+          <ResendDeliveryButton deliveryId={deliveryId} />
         ) : null}
       </div>
 
@@ -58,25 +85,25 @@ export default async function DeliveryDetailPage({
           <div className="flex flex-col gap-1">
             <span className="text-sm font-medium">Event</span>
             <span className="text-sm text-muted-foreground">
-              {delivery.event && typeof delivery.event === "object" ? (
-                <Link href={`/events/${delivery.event.id}`} className="hover:underline">
-                  {delivery.event.type}
+              {user?.role === "admin" && eventId ? (
+                <Link href={`/events/${eventId}`} className="hover:underline">
+                  {eventLabel}
                 </Link>
               ) : (
-                (delivery.event ?? "—")
+                eventLabel
               )}
             </span>
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-sm font-medium">Attempts</span>
             <span className="text-sm text-muted-foreground">
-              {delivery.attemptCount}/{delivery.maxAttempts}
+              {details.attemptsLabel}
             </span>
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-sm font-medium">Last attempt</span>
             <span className="text-sm text-muted-foreground">
-              {formatDateTime(delivery.lastAttemptAt)}
+              {formatDateTime(details.lastAttemptAt)}
             </span>
           </div>
         </CardContent>

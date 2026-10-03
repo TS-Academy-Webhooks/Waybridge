@@ -2,14 +2,17 @@ import { Suspense } from "react";
 import { EventFilters } from "@/features/events/components/event-filters";
 import { EventTable } from "@/features/events/components/event-table";
 import { EventTableSkeleton } from "@/features/events/components/event-table-skeleton";
+import { isEventType } from "@/constants/event-types";
+import { requireAdmin } from "@/lib/dal";
 
 export default async function EventsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ type?: string; page?: string }>;
+  searchParams: Promise<{ type?: string; search?: string; page?: string }>;
 }) {
-  const params = await searchParams;
+  const [params] = await Promise.all([searchParams, requireAdmin()]);
   const page = params.page ? Number(params.page) : undefined;
+  const type = isEventType(params.type) ? params.type : undefined;
 
   return (
     <div className="flex flex-col gap-6">
@@ -22,10 +25,10 @@ export default async function EventsPage({
       </div>
       <EventFilters />
       <Suspense
-        key={`${params.type ?? ""}-${params.page ?? ""}`}
+        key={`${type ?? ""}-${params.search ?? ""}-${params.page ?? ""}`}
         fallback={<EventTableSkeleton />}
       >
-        <EventTable type={params.type} page={page} />
+        <EventTable type={type} search={params.search} page={page} />
       </Suspense>
     </div>
   );
