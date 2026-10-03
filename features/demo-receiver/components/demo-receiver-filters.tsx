@@ -51,39 +51,41 @@ export function DemoReceiverFilters({
         formEvent.preventDefault();
         applyEventFilter(event);
       }}
-      className="flex flex-col gap-3 rounded-xl border bg-card p-4 sm:flex-row sm:items-end"
+      className="flex flex-col gap-3 rounded-xl border bg-card p-4"
     >
-      <div className="flex-1 space-y-2">
-        <Label htmlFor="receiver-event-filter">Event type</Label>
-        <Input
-          id="receiver-event-filter"
-          value={event}
-          maxLength={100}
-          placeholder="shipment.created"
-          onChange={(changeEvent) => setEvent(changeEvent.target.value)}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="receiver-signature-filter">Signature</Label>
-        <Select
-          value={signatureValue ?? "all"}
-          onValueChange={(value) => {
-            updateParams({
-              event: event.trim() || null,
-              signatureValid: value === "all" ? null : value,
-            });
-          }}
-        >
-          <SelectTrigger id="receiver-signature-filter" className="w-full sm:w-44">
-            <SelectValue placeholder="All signatures" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All signatures</SelectItem>
-            <SelectItem value="true">Valid</SelectItem>
-            <SelectItem value="false">Invalid</SelectItem>
-            <SelectItem value="unknown">Missing</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+        <div className="flex flex-1 flex-col gap-2">
+          <Label htmlFor="receiver-event-filter">Event type</Label>
+          <Input
+            id="receiver-event-filter"
+            value={event}
+            maxLength={100}
+            placeholder="shipment.created"
+            onChange={(changeEvent) => setEvent(changeEvent.target.value)}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="receiver-signature-filter">Signature</Label>
+          <Select
+            value={signatureValue ?? "all"}
+            onValueChange={(value) => {
+              updateParams({
+                event: event.trim() || null,
+                signatureValid: value === "all" ? null : value,
+              });
+            }}
+          >
+            <SelectTrigger id="receiver-signature-filter" className="w-full py-1 sm:w-44">
+              <SelectValue placeholder="All signatures" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All signatures</SelectItem>
+              <SelectItem value="true">Valid</SelectItem>
+              <SelectItem value="false">Invalid</SelectItem>
+              <SelectItem value="unknown">Missing</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="flex gap-2">
         <Button type="submit" disabled={isPending}>
