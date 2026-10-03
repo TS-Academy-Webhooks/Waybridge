@@ -61,7 +61,7 @@ export default async function DemoReceiverPage({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Demo receiver</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Demo Receiver</h1>
         <p className="text-muted-foreground">
           Inspect webhook requests and configure test responses without standing up your own server.
         </p>

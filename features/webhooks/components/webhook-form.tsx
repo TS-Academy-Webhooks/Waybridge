@@ -178,7 +178,10 @@ export function WebhookForm(props: WebhookFormProps) {
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isPending}>
+            <Button
+              type="submit"
+              disabled={isPending || (props.mode === "create" && createdId !== null)}
+            >
               {isPending
                 ? "Saving..."
                 : props.mode === "create"

@@ -35,7 +35,7 @@ const NAV_ITEMS = [
 ];
 
 const TOOLS_NAV_ITEMS = [
-  { title: "Demo receiver", url: "/demo-receiver", icon: Radio },
+  { title: "Demo Receiver", url: "/demo-receiver", icon: Radio },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
