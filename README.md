@@ -4,7 +4,7 @@ A full-stack logistics platform frontend: shipment management, a public
 customer-tracking page, an event/webhook delivery pipeline, and an admin
 dashboard — built on **Next.js 16 (App Router)**, **shadcn/ui**, **Radix UI**,
 **Tailwind CSS v4**, and **Motion**. It talks to a separate Express/MongoDB
-backend in the sibling `waybridge-be` repo.
+backend in the sibling `davinci/` directory.
 
 This project replaces an earlier Vite + React Router SPA that only handled
 webhook CRUD. The rebuild keeps the same backend contract but moves auth and
@@ -37,7 +37,7 @@ pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:5000](http://localhost:5000). The app expects a
+Open [http://localhost:3000](http://localhost:3000). The app expects a
 running backend (see [Backend dependency](#backend-dependency) below) —
 without it, every authenticated page will fail its server-side `fetch` calls.
 
@@ -46,7 +46,7 @@ without it, every authenticated page will fail its server-side `fetch` calls.
 Create `.env.local` (already gitignored):
 
 ```bash
-BACKEND_API_URL=http://localhost:3000/api
+BACKEND_API_URL=http://localhost:5000/api
 ```
 
 `BACKEND_API_URL` is **server-only** (read in `lib/api-config.ts`, never
@@ -59,7 +59,7 @@ Component; don't expose the base URL itself to the client.
 ### Available scripts
 
 ```bash
-pnpm dev      # next dev (Turbopack)
+pnpm dev      # next dev (Turbopack, port 3000)
 pnpm build    # next build — also runs the TypeScript checker
 pnpm start    # next start (serve the production build)
 pnpm lint     # eslint
@@ -74,26 +74,34 @@ history — see [Verification workflow](#verification-workflow).
 ## Backend dependency
 
 This frontend has **no backend code of its own**. It is a pure client of the
-Express API defined in the sibling `waybridge-be/` repository. To run the
+Express API defined in the sibling `davinci/` directory. To run the
 full stack locally:
 
 ```bash
-cd ../waybridge-be
+cd ../davinci
 npm run dev
 ```
 
 The backend needs its own `.env` configured as described in its README. It
-listens on port 3000 by default, matching this project's default
-`BACKEND_API_URL`.
+listens on port 5000 by default; this project's default `BACKEND_API_URL`
+targets that port.
 
 The frontend integrates with the merged API contract documented in
-`waybridge-be/API_MIGRATION.md`:
+`../davinci/API_MIGRATION.md`:
 
 It supports customer-owned shipments, user-owned webhooks, shipment events,
 delivery retries, and the demo receiver. Refresh tokens are delivered as
 HttpOnly cookies; configure `BACKEND_API_URL` to the backend origin and use
 the documented auth/session flow rather than storing refresh tokens in
 browser-accessible storage.
+
+The `/demo-receiver` page is integrated with the backend receiver API. Webhook
+POSTs go to the public receiver URL; request inspection, clearing, and response
+configuration are admin-only. The page supports request filters, pagination,
+signature details, configurable success/failure responses, and reset actions.
+History and response profiles are in memory and reset when the backend restarts.
+Production deployments must enable the backend route with
+`ENABLE_DEMO_RECEIVER=true`.
 
 If the backend contract changes, consult its migration guide and the
 corresponding route/controller before adjusting the frontend.
@@ -313,7 +321,7 @@ using the same gate every time:
 
 ### Manual end-to-end smoke test
 
-With both the backend (`npm run dev` in `waybridge-be/`) and this app
+With both the backend (`npm run dev` in `../davinci/`) and this app
 (`pnpm dev`) running:
 
 1. Register a user via `POST /api/auth/register`, then log in to get a JWT.
@@ -324,7 +332,10 @@ With both the backend (`npm run dev` in `waybridge-be/`) and this app
 3. Create a shipment and a webhook via the backend API, advance the
    shipment's status, and confirm: an event was created, a delivery fired
    (success or failure depending on the webhook URL), and all of
-   `/shipments`, `/events`, `/deliveries`, and `/dashboard` reflect it.
+   `/shipments`, `/events`, `/deliveries`, and `/dashboard` reflect it. As an
+   admin, open `/demo-receiver`, refresh request history, and inspect the
+   captured payload and signature result. Try a test webhook at the `/fail`
+   URL and update/reset response profiles.
 4. Test the public `/track` page against a real tracking number.
 5. Clean up any test data created against a shared/real database.
 
@@ -332,13 +343,6 @@ With both the backend (`npm run dev` in `waybridge-be/`) and this app
 
 ## Roadmap / not-yet-implemented
 
-- **Demo receiver payload capture**: `/demo-receiver` currently only shows the
-  receiver URL and copy-to-clipboard — it does not display captured payloads,
-  because the backend doesn't implement the endpoint yet. Once
-  `demo-receiver.controller.js` / `demo-receiver.routes.js` exist, extend
-  `app/(dashboard)/demo-receiver/page.tsx` to poll or fetch the last N
-  received payloads (event type, event ID, shipment ID, payload, headers,
-  timestamp).
 - **API key management**: referenced in the old SPA's empty `ApiKeys` stub,
   but deferred here because the current backend contract doesn't expose an
   API key endpoint. Don't invent one — confirm with the backend team first.
