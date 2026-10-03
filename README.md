@@ -56,6 +56,14 @@ you need the browser to know a backend-derived URL (e.g. the demo receiver
 URL shown on `/demo-receiver`), pass it down as a plain prop from a Server
 Component; don't expose the base URL itself to the client.
 
+### SEO site origin
+
+Canonical URLs, social metadata, and the sitemap use `NEXT_PUBLIC_SITE_URL`.
+If unset, it defaults to `http://localhost:3000` in development and
+`https://waybridge-six.vercel.app` in production. Set it to the exact site
+origin (scheme and host, without a path or query) when deploying on a custom
+domain.
+
 ### Available scripts
 
 ```bash

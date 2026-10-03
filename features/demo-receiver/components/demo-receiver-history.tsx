@@ -3,7 +3,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -52,15 +51,17 @@ export function DemoReceiverHistory({
 }) {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Received requests</CardTitle>
-        <CardDescription>
-          Latest requests captured by this backend. Signature and sensitive headers are shown
-          without exposing the original signature or credentials.
-        </CardDescription>
-        <CardAction>
+      <CardHeader className="grid-cols-1 gap-y-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="flex flex-col gap-1">
+          <CardTitle>Received requests</CardTitle>
+          <CardDescription>
+            Latest requests captured by this backend. Signature and sensitive headers are shown
+            without exposing the original signature or credentials.
+          </CardDescription>
+        </div>
+        <div className="sm:justify-self-end">
           <DemoReceiverAdminActions />
-        </CardAction>
+        </div>
       </CardHeader>
       <CardContent>
         {requests.length === 0 ? (

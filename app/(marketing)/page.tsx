@@ -12,6 +12,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { JsonLd } from "@/components/seo/json-ld";
+import { absoluteSiteUrl, createPageMetadata, SITE_NAME } from "@/lib/seo";
 
 const FEATURES = [
   {
@@ -34,9 +36,30 @@ const FEATURES = [
   },
 ];
 
+const HOME_DESCRIPTION =
+  "Manage shipments from creation to delivery and send signed, retryable webhook notifications when status changes.";
+
+export const metadata = createPageMetadata({
+  title: "Logistics tracking & webhook delivery",
+  description: HOME_DESCRIPTION,
+  path: "/",
+});
+
+const softwareApplicationStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "@id": absoluteSiteUrl("/#software"),
+  name: SITE_NAME,
+  description: HOME_DESCRIPTION,
+  url: absoluteSiteUrl("/"),
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+};
+
 export default function LandingPage() {
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-24 px-6 py-20">
+      <JsonLd data={softwareApplicationStructuredData} />
       <section className="flex flex-col items-center gap-6 text-center">
         <h1 className="max-w-2xl text-4xl font-semibold tracking-tight sm:text-5xl">
           Logistics tracking and webhook delivery, in one platform

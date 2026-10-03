@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Menu } from "lucide-react";
+import { BrandMark } from "@/components/brand-mark";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -33,7 +34,10 @@ export function MobileMarketingNavigation({
       </SheetTrigger>
       <SheetContent side="right" className="p-0">
         <SheetHeader className="border-b pe-12">
-          <SheetTitle>Waybridge</SheetTitle>
+          <SheetTitle className="flex items-center gap-2">
+            <BrandMark className="size-7 rounded-md" size={28} />
+            Waybridge
+          </SheetTitle>
           <SheetDescription>Navigate the platform.</SheetDescription>
         </SheetHeader>
         <nav aria-label="Mobile navigation" className="flex flex-col gap-1 px-4 py-2">

@@ -1,7 +1,20 @@
 import type { ReactNode } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { Webhook } from "lucide-react";
+import { BrandMark } from "@/components/brand-mark";
 import { ModeToggle } from "@/components/mode-toggle";
+
+export const metadata: Metadata = {
+  title: "Account",
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
+};
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
@@ -14,9 +27,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           href="/"
           className="flex w-fit items-center gap-2 font-semibold text-muted-foreground transition-colors hover:text-foreground"
         >
-          <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Webhook className="size-4" />
-          </span>
+          <BrandMark className="size-8 rounded-lg" />
           Waybridge <span className="font-normal">· Back to home</span>
         </Link>
         {children}

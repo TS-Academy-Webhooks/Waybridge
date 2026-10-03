@@ -1,6 +1,34 @@
+import { JsonLd } from "@/components/seo/json-ld";
+import { absoluteSiteUrl, createPageMetadata } from "@/lib/seo";
+
+const ABOUT_DESCRIPTION =
+  "Waybridge connects shipment tracking with signed webhook delivery, helping teams and customers stay informed as shipments move.";
+
+export const metadata = createPageMetadata({
+  title: "About the logistics platform",
+  description: ABOUT_DESCRIPTION,
+  path: "/about",
+});
+
+const aboutPageStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "@id": absoluteSiteUrl("/about"),
+  name: "About Waybridge",
+  description: ABOUT_DESCRIPTION,
+  url: absoluteSiteUrl("/about"),
+  isPartOf: {
+    "@id": absoluteSiteUrl("/#website"),
+  },
+  about: {
+    "@id": absoluteSiteUrl("/#software"),
+  },
+};
+
 export default function AboutPage() {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 py-20">
+      <JsonLd data={aboutPageStructuredData} />
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">About Waybridge</h1>
         <p className="mt-4 text-muted-foreground">

@@ -11,6 +11,7 @@ import {
   SendHorizonal,
   Webhook,
 } from "lucide-react";
+import { BrandMark } from "@/components/brand-mark";
 import {
   Sidebar,
   SidebarContent,
@@ -49,9 +50,7 @@ export function AppSidebar({ user }: { user: SessionUser | null }) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/dashboard">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Webhook className="size-4" />
-                </div>
+                <BrandMark className="size-8 rounded-lg" />
                 <div className="flex flex-col gap-0.5 leading-none">
                   <span className="font-semibold">Waybridge</span>
                   <span className="text-xs text-muted-foreground">
