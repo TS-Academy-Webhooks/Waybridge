@@ -12,7 +12,7 @@ import {
   useState,
 } from "react";
 import type { ReactNode } from "react";
-import { MoreHorizontal } from "lucide-react";
+import { ChevronRight, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Breadcrumb,
@@ -282,6 +282,8 @@ export function DashboardBreadcrumbTitle({
 export function DashboardBreadcrumbs() {
   const { entries, isReady } = useDashboardNavigation();
   const listRef = useRef<HTMLOListElement>(null);
+  const visibleEntries = entries.slice(-3);
+  const olderEntries = entries.slice(0, -3);
   const currentEntry = entries.at(-1);
 
   useEffect(() => {
@@ -295,73 +297,70 @@ export function DashboardBreadcrumbs() {
   return (
     <Breadcrumb
       aria-label="Dashboard navigation history"
-      className="min-w-0 flex-1"
+      className="flex min-w-0 flex-1 items-center"
     >
+      {olderEntries.length > 0 ? (
+        <>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="size-7 shrink-0"
+                aria-label="Show older navigation history"
+              >
+                <MoreHorizontal aria-hidden="true" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="start"
+              className="w-64 max-w-[80vw]"
+            >
+              <DropdownMenuLabel>Earlier visits</DropdownMenuLabel>
+              {olderEntries.map((entry, index) => (
+                <DropdownMenuItem
+                  key={`${entry.href}-${index}`}
+                  asChild
+                  className="w-full max-w-[min(80vw,20rem)] truncate"
+                >
+                  <Link href={entry.href} title={entry.label}>
+                    {entry.label}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <ChevronRight
+            aria-hidden="true"
+            className="mx-1 size-3.5 shrink-0 text-muted-foreground"
+          />
+        </>
+      ) : null}
       <BreadcrumbList
         ref={listRef}
-        className="w-full min-w-0 flex-nowrap overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="min-w-0 flex-1 flex-nowrap overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {entries.length > 1 ? (
-          <>
-            <DropdownMenu>
-              <BreadcrumbItem className="shrink-0 md:hidden">
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    className="size-7"
-                    aria-label="Show previous pages"
-                  >
-                    <MoreHorizontal aria-hidden="true" />
-                  </Button>
-                </DropdownMenuTrigger>
-              </BreadcrumbItem>
-              <DropdownMenuContent
-                align="start"
-                className="w-64 max-w-[80vw]"
-              >
-                <DropdownMenuLabel>Previous pages</DropdownMenuLabel>
-                {entries.slice(0, -1).map((entry, index) => (
-                  <DropdownMenuItem
-                    key={`${entry.href}-${index}`}
-                    asChild
-                    className="w-full max-w-[min(80vw,20rem)] truncate"
-                  >
-                    <Link href={entry.href} title={entry.label}>
-                      {entry.label}
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <BreadcrumbSeparator className="shrink-0 md:hidden" />
-          </>
-        ) : null}
-        <BreadcrumbItem className="min-w-0 md:hidden">
-          <BreadcrumbPage
-            className="max-w-[30vw] truncate sm:max-w-[40vw]"
-            title={currentEntry.label}
-          >
-            {currentEntry.label}
-          </BreadcrumbPage>
-        </BreadcrumbItem>
-        {entries.map((entry, index) => {
-          const isCurrent = index === entries.length - 1;
+        {visibleEntries.map((entry, index) => {
+          const isCurrent = index === visibleEntries.length - 1;
+          const historyIndex = entries.length - visibleEntries.length + index;
           return (
-            <Fragment key={`${entry.href}-${index}`}>
+            <Fragment key={`${entry.href}-${historyIndex}`}>
               {index > 0 ? (
-                <BreadcrumbSeparator className="hidden shrink-0 md:inline-flex" />
+                <BreadcrumbSeparator className="shrink-0" />
               ) : null}
-              <BreadcrumbItem className="hidden min-w-0 shrink-0 md:inline-flex">
+              <BreadcrumbItem className="min-w-0 shrink-0">
                 {isCurrent ? (
                   <BreadcrumbPage
-                    className="max-w-56 truncate"
+                    className="max-w-[min(30vw,14rem)] truncate sm:max-w-56"
                     title={entry.label}
                   >
                     {entry.label}
                   </BreadcrumbPage>
                 ) : (
-                  <BreadcrumbLink asChild className="max-w-56 truncate">
+                  <BreadcrumbLink
+                    asChild
+                    className="max-w-[min(30vw,14rem)] truncate sm:max-w-56"
+                  >
                     <Link href={entry.href} title={entry.label}>
                       {entry.label}
                     </Link>
