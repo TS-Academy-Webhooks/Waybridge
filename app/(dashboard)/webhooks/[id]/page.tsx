@@ -37,12 +37,16 @@ export default async function WebhookDetailPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{webhook.name}</h1>
-          <p className="font-mono text-sm text-muted-foreground">{webhook.url}</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="break-words text-2xl font-semibold tracking-tight">
+            {webhook.name}
+          </h1>
+          <p className="break-all font-mono text-sm text-muted-foreground">
+            {webhook.url}
+          </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <TestWebhookButton id={webhook.id} />
           <Button asChild variant="outline">
             <Link href={`/webhooks/${webhook.id}/edit`}>
