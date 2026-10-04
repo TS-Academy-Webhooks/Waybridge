@@ -12,6 +12,24 @@ data-fetching entirely server-side (Next's BFF pattern) and expands scope to
 the full platform described in the product roadmap: shipments, events,
 deliveries, public tracking, marketing pages, a demo receiver, and settings.
 
+## Attribution
+
+The projects in [Waybridge](https://github.com/TS-Academy-Webhooks/Waybridge)
+and [Waybridge-BE](https://github.com/TS-Academy-Webhooks/Waybridge-BE) are
+direct results of the efforts of everyone listed in the `CONTRIBUTORS.md`
+files of both repositories. Both projects also owe their success to the
+underlying work in the
+[Webhook project](https://github.com/TS-Academy-Webhooks/Webhook).
+
+### Contributors
+
+- Faith Gabriel ([@Faithgabriel1](https://github.com/Faithgabriel1))
+- Egele Tochi Vivian ([@Kingsley-Vivian](https://github.com/Kingsley-Vivian))
+- Babs-Alli Ayomipo David ([@BabsAlliDev](https://github.com/BabsAlliDev))
+- Opeyemi Daodu ([@Alternateopeyemi](https://github.com/Alternateopeyemi))
+- Nnanyerugo Victory ([@ivynvc](https://github.com/ivynvc))
+- Emmanuel Agbavwe ([@Aro1914](https://github.com/Aro1914))
+
 ---
 
 ## Tech stack
