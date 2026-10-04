@@ -9,7 +9,7 @@ export function BrandMark({
 }) {
   return (
     <Image
-      src="/waybridge-logo.png"
+      src="/icons/waybridge-icon.svg"
       alt=""
       width={size}
       height={size}

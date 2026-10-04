@@ -29,11 +29,23 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
   icons: {
-    icon: {
-      url: "/waybridge-logo.png",
-      type: "image/png",
-      sizes: "32x32",
-    },
+    icon: [
+      {
+        url: "/icons/waybridge-icon.svg",
+        type: "image/svg+xml",
+        sizes: "any",
+      },
+      {
+        url: "/icons/waybridge-192x192.png",
+        type: "image/png",
+        sizes: "192x192",
+      },
+      {
+        url: "/icons/waybridge-512x512.png",
+        type: "image/png",
+        sizes: "512x512",
+      },
+    ],
     apple: {
       url: "/icons/waybridge-apple-touch-icon.png",
       type: "image/png",

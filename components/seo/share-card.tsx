@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { SITE_URL } from "@/lib/seo";
 
 const logoData = await readFile(
-  join(process.cwd(), "public", "waybridge-logo.png"),
+  join(process.cwd(), "public", "icons", "waybridge-512x512.png"),
   "base64",
 );
 const logoSource = `data:image/png;base64,${logoData}`;
