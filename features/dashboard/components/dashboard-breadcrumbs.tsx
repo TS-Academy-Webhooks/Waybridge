@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   createContext,
+  createElement,
   Fragment,
   useCallback,
   useContext,
@@ -12,8 +13,6 @@ import {
   useState,
 } from "react";
 import type { ReactNode } from "react";
-import { ChevronRight, MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -22,13 +21,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { getDashboardSectionIcon } from "@/features/dashboard/navigation";
 
 type BreadcrumbEntry = {
   href: string;
@@ -114,6 +107,33 @@ function isBreadcrumbEntry(value: unknown): value is BreadcrumbEntry {
   );
 }
 
+function keepMostRecentVisitPerPath(
+  entries: BreadcrumbEntry[],
+): BreadcrumbEntry[] {
+  const seenPaths = new Set<string>();
+  const mostRecentFirst: BreadcrumbEntry[] = [];
+
+  for (let index = entries.length - 1; index >= 0; index -= 1) {
+    const entry = entries[index];
+    if (seenPaths.has(entry.href)) continue;
+
+    seenPaths.add(entry.href);
+    mostRecentFirst.push(entry);
+  }
+
+  return mostRecentFirst.reverse();
+}
+
+function moveVisitToEnd(
+  entries: BreadcrumbEntry[],
+  visit: BreadcrumbEntry,
+): BreadcrumbEntry[] {
+  return [
+    ...entries.filter((entry) => entry.href !== visit.href),
+    visit,
+  ];
+}
+
 function readNavigationHistory(storageKey: string): BreadcrumbEntry[] {
   const serialized = window.sessionStorage.getItem(storageKey);
   if (serialized === null) return [];
@@ -147,7 +167,7 @@ function readNavigationHistory(storageKey: string): BreadcrumbEntry[] {
   if (skippedInvalidEntry) {
     console.warn("Invalid entries in dashboard navigation history were ignored.");
   }
-  return entries;
+  return keepMostRecentVisitPerPath(entries);
 }
 
 export function DashboardNavigationProvider({
@@ -202,25 +222,20 @@ export function DashboardNavigationProvider({
       const restoredEntries = readNavigationHistory(storageKey);
       const pendingLabel = pendingLabelsRef.current.get(currentHref);
       pendingLabelsRef.current.delete(currentHref);
-      const lastIndex = restoredEntries.length - 1;
-
-      if (lastIndex >= 0 && restoredEntries[lastIndex].href === currentHref) {
-        if (pendingLabel) {
-          restoredEntries[lastIndex] = {
-            ...restoredEntries[lastIndex],
-            label: pendingLabel,
-          };
-        }
-      } else {
-        restoredEntries.push({
-          href: currentHref,
-          label: pendingLabel ?? getDefaultBreadcrumbLabel(currentHref),
-        });
-      }
+      const existingEntry = restoredEntries.find(
+        (entry) => entry.href === currentHref,
+      );
+      const currentEntry = {
+        href: currentHref,
+        label:
+          pendingLabel ??
+          existingEntry?.label ??
+          getDefaultBreadcrumbLabel(currentHref),
+      };
 
       lastPathnameRef.current = currentHref;
       isReadyRef.current = true;
-      setEntries(restoredEntries);
+      setEntries(moveVisitToEnd(restoredEntries, currentEntry));
       setIsReady(true);
       return;
     }
@@ -230,13 +245,18 @@ export function DashboardNavigationProvider({
     lastPathnameRef.current = currentHref;
     const pendingLabel = pendingLabelsRef.current.get(currentHref);
     pendingLabelsRef.current.delete(currentHref);
-    setEntries((currentEntries) => [
-      ...currentEntries,
-      {
+    setEntries((currentEntries) => {
+      const existingEntry = currentEntries.find(
+        (entry) => entry.href === currentHref,
+      );
+      return moveVisitToEnd(currentEntries, {
         href: currentHref,
-        label: pendingLabel ?? getDefaultBreadcrumbLabel(currentHref),
-      },
-    ]);
+        label:
+          pendingLabel ??
+          existingEntry?.label ??
+          getDefaultBreadcrumbLabel(currentHref),
+      });
+    });
   }, [pathname, storageKey]);
 
   useEffect(() => {
@@ -283,7 +303,6 @@ export function DashboardBreadcrumbs() {
   const { entries, isReady } = useDashboardNavigation();
   const listRef = useRef<HTMLOListElement>(null);
   const visibleEntries = entries.slice(-3);
-  const olderEntries = entries.slice(0, -3);
   const currentEntry = entries.at(-1);
 
   useEffect(() => {
@@ -299,43 +318,10 @@ export function DashboardBreadcrumbs() {
       aria-label="Dashboard navigation history"
       className="flex min-w-0 flex-1 items-center"
     >
-      {olderEntries.length > 0 ? (
-        <>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                className="size-7 shrink-0"
-                aria-label="Show older navigation history"
-              >
-                <MoreHorizontal aria-hidden="true" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="start"
-              className="w-64 max-w-[80vw]"
-            >
-              <DropdownMenuLabel>Earlier visits</DropdownMenuLabel>
-              {olderEntries.map((entry, index) => (
-                <DropdownMenuItem
-                  key={`${entry.href}-${index}`}
-                  asChild
-                  className="w-full max-w-[min(80vw,20rem)] truncate"
-                >
-                  <Link href={entry.href} title={entry.label}>
-                    {entry.label}
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <ChevronRight
-            aria-hidden="true"
-            className="mx-1 size-3.5 shrink-0 text-muted-foreground"
-          />
-        </>
-      ) : null}
+      {createElement(getDashboardSectionIcon(currentEntry.href), {
+        "aria-hidden": true,
+        className: "mr-2 size-4 shrink-0 text-muted-foreground",
+      })}
       <BreadcrumbList
         ref={listRef}
         className="min-w-0 flex-1 flex-nowrap overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"

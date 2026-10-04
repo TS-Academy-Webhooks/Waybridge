@@ -2,15 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Activity,
-  LayoutDashboard,
-  Package,
-  Radio,
-  Settings,
-  SendHorizonal,
-  Webhook,
-} from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import {
   Sidebar,
@@ -25,20 +16,11 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { NavUser } from "@/components/nav-user";
+import {
+  DASHBOARD_NAV_ITEMS,
+  DASHBOARD_TOOLS_NAV_ITEMS,
+} from "@/features/dashboard/navigation";
 import type { SessionUser } from "@/lib/dal";
-
-const NAV_ITEMS = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Shipments", url: "/shipments", icon: Package },
-  { title: "Webhooks", url: "/webhooks", icon: Webhook },
-  { title: "Events", url: "/events", icon: Activity, adminOnly: true },
-  { title: "Deliveries", url: "/deliveries", icon: SendHorizonal },
-];
-
-const TOOLS_NAV_ITEMS = [
-  { title: "Demo Receiver", url: "/demo-receiver", icon: Radio },
-  { title: "Settings", url: "/settings", icon: Settings },
-];
 
 export function AppSidebar({ user }: { user: SessionUser | null }) {
   const pathname = usePathname();
@@ -67,7 +49,7 @@ export function AppSidebar({ user }: { user: SessionUser | null }) {
           <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {NAV_ITEMS.filter((item) => !item.adminOnly || user?.role === "admin").map((item) => {
+              {DASHBOARD_NAV_ITEMS.filter((item) => !item.adminOnly || user?.role === "admin").map((item) => {
                 const isActive = pathname.startsWith(item.url);
                 return (
                   <SidebarMenuItem key={item.url}>
@@ -87,7 +69,7 @@ export function AppSidebar({ user }: { user: SessionUser | null }) {
           <SidebarGroupLabel>Tools</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {TOOLS_NAV_ITEMS.map((item) => {
+              {DASHBOARD_TOOLS_NAV_ITEMS.map((item) => {
                 const isActive = pathname.startsWith(item.url);
                 return (
                   <SidebarMenuItem key={item.url}>
