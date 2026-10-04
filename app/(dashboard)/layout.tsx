@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Home } from "lucide-react";
-import { verifySession, getCurrentUser } from "@/lib/dal";
+import { verifySession } from "@/lib/dal";
+import { SessionRefresh } from "@/features/auth/components/session-refresh";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
@@ -38,11 +39,11 @@ export default async function DashboardLayout({
 }: {
   children: ReactNode;
 }) {
-  await verifySession();
-  const user = await getCurrentUser();
+  const { user, expiresAt } = await verifySession();
 
   return (
     <SidebarProvider>
+      <SessionRefresh expiresAt={expiresAt} />
       <AppSidebar user={user} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b px-4">

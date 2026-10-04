@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { absoluteSiteUrl } from "@/lib/seo";
 
-const PUBLIC_ROUTES = ["/", "/about", "/track"] as const;
+const PUBLIC_ROUTES = ["/", "/about", "/docs", "/track"] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return PUBLIC_ROUTES.map((path) => ({

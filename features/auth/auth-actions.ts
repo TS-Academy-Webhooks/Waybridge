@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createSession, deleteSession } from "@/lib/session";
 import { API_BASE_URL } from "@/lib/api-config";
 import { parseApiError, type FieldErrors } from "@/lib/api-error";
+import { getSafeReturnToPath } from "@/lib/auth-redirect";
 import { loginFormSchema, registerFormSchema } from "@/lib/validate-auth";
 import {
   BACKEND_REFRESH_COOKIE,
@@ -123,7 +124,7 @@ export async function loginAction(
     return { message: result.message, fieldErrors: result.fieldErrors };
   }
 
-  redirect("/dashboard");
+  redirect(getSafeReturnToPath(formData.get("next")) ?? "/dashboard");
 }
 
 export async function logoutAction() {

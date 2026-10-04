@@ -36,6 +36,9 @@ export default async function MarketingLayout({ children }: { children: ReactNod
             <Link href="/about" className="text-muted-foreground hover:text-foreground">
               About
             </Link>
+            <Link href="/docs" className="text-muted-foreground hover:text-foreground">
+              Docs
+            </Link>
             <Link href="/track" className="text-muted-foreground hover:text-foreground">
               Track a shipment
             </Link>

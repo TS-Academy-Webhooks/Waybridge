@@ -7,9 +7,13 @@
 // call verifySession()/getCurrentUser() and pass plain data down as props.
 import "server-only";
 import { cache } from "react";
-import { notFound, redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { getSessionToken } from "./session";
 import { API_BASE_URL } from "./api-config";
+import { AUTH_RETURN_TO_HEADER } from "./auth-constants";
+import { getSafeReturnToPath } from "./auth-redirect";
+import { getAccessTokenExpiry } from "./session-refresh";
 
 export type SessionUser = {
   id: string;
@@ -19,16 +23,17 @@ export type SessionUser = {
   role: "admin" | "customer";
 };
 
-// Optimistic-only note: this checks for the cookie's *presence*, matching
-// what proxy.ts already did before the page rendered. It does NOT re-verify
-// the JWT against the backend — that happens implicitly on the next backend
-// fetch (an expired/invalid token just gets a 401 from Express).
-export async function verifySession(): Promise<{ token: string }> {
+export async function verifySession(): Promise<{
+  user: SessionUser;
+  expiresAt: number | null;
+}> {
   const token = await getSessionToken();
-  if (!token) {
-    redirect("/login");
-  }
-  return { token };
+  if (!token) return redirectToLogin();
+
+  const user = await getCurrentUser();
+  if (!user) return redirectToLogin();
+
+  return { user, expiresAt: getAccessTokenExpiry(token) };
 }
 
 export async function getAuthHeader(): Promise<Record<string, string>> {
@@ -43,34 +48,55 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
   const token = await getSessionToken();
   if (!token) return null;
 
-  try {
-    const res = await fetch(`${API_BASE_URL}/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-    });
-    const json = await res.json().catch(() => null);
-    if (!res.ok || !json?.success) return null;
-    const user = json.data?.user ?? json.data;
-    if (
-      !user ||
-      typeof user.id !== "string" ||
-      typeof user.name !== "string" ||
-      typeof user.email !== "string" ||
-      (user.role !== "admin" && user.role !== "customer")
-    ) {
-      return null;
-    }
-    return user as SessionUser;
-  } catch {
-    return null;
+  const res = await fetch(`${API_BASE_URL}/auth/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
+  if (res.status === 401) return null;
+
+  const json: unknown = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(`Unable to verify the session (HTTP ${res.status}).`);
   }
+  if (!isRecord(json) || json.success !== true) {
+    throw new Error("The server returned an invalid session response.");
+  }
+
+  const data = json.data;
+  const user = isRecord(data) && "user" in data ? data.user : data;
+  if (
+    !isRecord(user) ||
+    typeof user.id !== "string" ||
+    typeof user.name !== "string" ||
+    typeof user.email !== "string" ||
+    (user.role !== "admin" && user.role !== "customer")
+  ) {
+    throw new Error("The server returned invalid user data for the session.");
+  }
+
+  return {
+    id: user.id,
+    ...(typeof user._id === "string" ? { _id: user._id } : {}),
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
 });
 
 export async function requireAdmin(): Promise<SessionUser> {
   const user = await getCurrentUser();
-  if (!user || user.role !== "admin") {
-    if (user) redirect("/dashboard");
-    notFound();
-  }
+  if (!user) return redirectToLogin();
+  if (user.role !== "admin") redirect("/dashboard");
   return user;
+}
+
+async function redirectToLogin(): Promise<never> {
+  const returnTo =
+    getSafeReturnToPath((await headers()).get(AUTH_RETURN_TO_HEADER)) ??
+    "/dashboard";
+  redirect(`/login?next=${encodeURIComponent(returnTo)}`);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
 }

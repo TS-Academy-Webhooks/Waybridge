@@ -42,6 +42,7 @@ export function MobileMarketingNavigation({
         </SheetHeader>
         <nav aria-label="Mobile navigation" className="flex flex-col gap-1 px-4 py-2">
           <MobileNavigationLink href="/about">About</MobileNavigationLink>
+          <MobileNavigationLink href="/docs">Docs</MobileNavigationLink>
           <MobileNavigationLink href="/track">Track a shipment</MobileNavigationLink>
           {isAuthenticated ? (
             <SheetClose asChild>
