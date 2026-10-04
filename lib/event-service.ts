@@ -57,11 +57,16 @@ export type EventDelivery = {
 
 export async function getEvent(
   id: string
-): Promise<{ event: ShipmentEvent; deliveries: EventDelivery[] }> {
-  const event = await authFetch<ShipmentEvent>(`/events/${id}`);
+): Promise<ShipmentEvent> {
+  return authFetch<ShipmentEvent>(`/events/${id}`);
+}
+
+export async function getEventDeliveries(
+  event: ShipmentEvent
+): Promise<EventDelivery[]> {
   const eventDocumentId = event._id ?? event.id;
   const deliveries = await authFetch<{ items: EventDelivery[] }>(
     `/deliveries${buildQuery({ eventId: eventDocumentId, limit: 50 })}`
   );
-  return { event, deliveries: deliveries.items };
+  return deliveries.items;
 }
