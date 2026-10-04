@@ -10,6 +10,7 @@ import {
 import { formatDate, formatDateTime } from "@/lib/format-date";
 import { getShipment } from "@/lib/shipment-service";
 import { ApiRequestError } from "@/lib/server-fetch";
+import { DashboardBreadcrumbTitle } from "@/features/dashboard/components/dashboard-breadcrumbs";
 import {
   SHIPMENT_STATUS_BADGE_VARIANT,
   formatShipmentStatus,
@@ -39,6 +40,10 @@ export default async function ShipmentDetailPage({
 
   return (
     <div className="flex flex-col gap-6">
+      <DashboardBreadcrumbTitle
+        href={`/shipments/${encodeURIComponent(id)}`}
+        label={shipment.trackingNumber}
+      />
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="font-mono text-2xl font-semibold tracking-tight">

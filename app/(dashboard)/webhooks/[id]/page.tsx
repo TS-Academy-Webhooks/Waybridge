@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatDateTime } from "@/lib/format-date";
 import { getWebhook } from "@/lib/webhook-service";
 import { ApiRequestError } from "@/lib/server-fetch";
+import { DashboardBreadcrumbTitle } from "@/features/dashboard/components/dashboard-breadcrumbs";
 import { EventBadges } from "@/features/webhooks/components/event-badges";
 import { WebhookStatus } from "@/features/webhooks/components/webhook-status";
 import { DeleteWebhookDialog } from "@/features/webhooks/components/delete-webhook-dialog";
@@ -37,6 +38,10 @@ export default async function WebhookDetailPage({
 
   return (
     <div className="flex flex-col gap-6">
+      <DashboardBreadcrumbTitle
+        href={`/webhooks/${encodeURIComponent(id)}`}
+        label={webhook.name}
+      />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h1 className="break-words text-2xl font-semibold tracking-tight">

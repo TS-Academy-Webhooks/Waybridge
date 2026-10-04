@@ -24,6 +24,7 @@ import {
 } from "@/lib/event-service";
 import { ApiRequestError } from "@/lib/server-fetch";
 import { requireAdmin } from "@/lib/dal";
+import { DashboardBreadcrumbTitle } from "@/features/dashboard/components/dashboard-breadcrumbs";
 import { EventDeliveries } from "@/features/events/components/event-deliveries";
 
 export default async function EventDetailPage({
@@ -58,6 +59,10 @@ export default async function EventDetailPage({
 
   return (
     <div className="flex flex-col gap-6">
+      <DashboardBreadcrumbTitle
+        href={`/events/${encodeURIComponent(id)}`}
+        label={`Event ${event.eventId}`}
+      />
       <div>
         <Badge variant="secondary" className="mb-2">
           {formatEventType(event.type)}

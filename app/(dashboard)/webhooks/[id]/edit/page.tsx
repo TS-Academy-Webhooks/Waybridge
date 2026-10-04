@@ -3,6 +3,7 @@ import { WebhookForm } from "@/features/webhooks/components/webhook-form";
 import { getWebhook } from "@/lib/webhook-service";
 import { ApiRequestError } from "@/lib/server-fetch";
 import { DEMO_RECEIVER_URL } from "@/lib/api-config";
+import { DashboardBreadcrumbTitle } from "@/features/dashboard/components/dashboard-breadcrumbs";
 
 export default async function EditWebhookPage({
   params,
@@ -21,6 +22,10 @@ export default async function EditWebhookPage({
 
   return (
     <div className="flex flex-col gap-6">
+      <DashboardBreadcrumbTitle
+        href={`/webhooks/${encodeURIComponent(id)}/edit`}
+        label={`Edit ${webhook.name}`}
+      />
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Edit webhook</h1>
         <p className="text-muted-foreground">{webhook.name}</p>

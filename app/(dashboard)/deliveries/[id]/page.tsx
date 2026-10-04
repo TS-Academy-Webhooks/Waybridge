@@ -11,6 +11,7 @@ import {
 import { formatDateTime } from "@/lib/format-date";
 import { getDelivery, isLegacyDeliveryAttempt } from "@/lib/delivery-service";
 import { ApiRequestError } from "@/lib/server-fetch";
+import { DashboardBreadcrumbTitle } from "@/features/dashboard/components/dashboard-breadcrumbs";
 import { DELIVERY_STATUS_BADGE_VARIANT } from "@/constants/delivery-status";
 import { DeliveryAttempts } from "@/features/deliveries/components/delivery-attempts";
 import { ResendDeliveryButton } from "@/features/deliveries/components/resend-delivery-button";
@@ -57,6 +58,14 @@ export default async function DeliveryDetailPage({
 
   return (
     <div className="flex flex-col gap-6">
+      <DashboardBreadcrumbTitle
+        href={`/deliveries/${encodeURIComponent(id)}`}
+        label={
+          details.webhook && typeof details.webhook === "object"
+            ? `Delivery: ${details.webhook.name ?? "Webhook"}`
+            : "Delivery"
+        }
+      />
       <div className="flex items-start justify-between gap-4">
         <div>
           <Badge variant={DELIVERY_STATUS_BADGE_VARIANT[delivery.status]} className="mb-2">
