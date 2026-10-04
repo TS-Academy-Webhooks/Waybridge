@@ -64,6 +64,16 @@ If unset, it defaults to `http://localhost:3000` in development and
 origin (scheme and host, without a path or query) when deploying on a custom
 domain.
 
+### Installable web app
+
+Waybridge can be installed through the browser's native install control or, on
+iOS, Safari's **Share → Add to Home Screen** action. The installed app opens
+the dashboard; signed-out users follow the existing login redirect. Production
+installation requires HTTPS (localhost is treated as secure during development).
+Waybridge follows the selected light/dark appearance, but it is an online client:
+shipment data and backend features require a network connection, and no offline
+cache is provided.
+
 ### Available scripts
 
 ```bash
