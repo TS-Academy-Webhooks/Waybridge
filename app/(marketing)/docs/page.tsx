@@ -387,6 +387,9 @@ const ACCESS_LABELS: Record<AccessLevel, string> = {
   Admin: "Admin only",
 };
 
+const CODE_PANEL_CLASS = "w-full min-w-0 max-w-full overflow-x-auto";
+const CODE_CONTENT_CLASS = "block w-max min-w-max whitespace-pre";
+
 function EndpointSection({ group }: { group: EndpointGroup }) {
   return (
     <section id={group.id} className="scroll-mt-24 space-y-4">
@@ -583,17 +586,17 @@ export default function DocsPage() {
           </Card>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div className="space-y-3">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="min-w-0 space-y-3">
             <h3 className="font-semibold">Public tracking request</h3>
-            <pre className="overflow-x-auto rounded-xl border bg-muted/30 p-4 text-xs leading-6 sm:text-sm">
-              <code>{`curl https://<backend-host>/api/tracking/TRK-12345`}</code>
+            <pre className={`${CODE_PANEL_CLASS} rounded-xl border bg-muted/30 p-4 text-xs leading-6 sm:text-sm`}>
+              <code className={CODE_CONTENT_CLASS}>{`curl https://<backend-host>/api/tracking/TRK-12345`}</code>
             </pre>
           </div>
-          <div className="space-y-3">
+          <div className="min-w-0 space-y-3">
             <h3 className="font-semibold">Create a shipment</h3>
-            <pre className="overflow-x-auto rounded-xl border bg-muted/30 p-4 text-xs leading-6 sm:text-sm">
-              <code>{`curl --request POST https://<backend-host>/api/shipments \\
+            <pre className={`${CODE_PANEL_CLASS} rounded-xl border bg-muted/30 p-4 text-xs leading-6 sm:text-sm`}>
+              <code className={CODE_CONTENT_CLASS}>{`curl --request POST https://<backend-host>/api/shipments \\
   -H "Authorization: Bearer <access-token>" \\
   -H "Content-Type: application/json" \\
   --data '{"origin":"London","destination":"Paris","amount":42.5}'`}</code>
@@ -672,15 +675,15 @@ export default function DocsPage() {
           </p>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Card>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <Card className="min-w-0">
             <CardHeader>
               <CardTitle>Response shape</CardTitle>
               <CardDescription>Read the envelope before the resource data.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm leading-6 text-muted-foreground">
-              <pre className="overflow-x-auto rounded-lg bg-muted/50 p-3 font-mono text-xs leading-5 text-foreground">
-                <code>{`{
+            <CardContent className="min-w-0 space-y-3 text-sm leading-6 text-muted-foreground">
+              <pre className={`${CODE_PANEL_CLASS} rounded-lg bg-muted/50 p-3 font-mono text-xs leading-5 text-foreground`}>
+                <code className={CODE_CONTENT_CLASS}>{`{
   "success": true,
   "message": "Shipment retrieved",
   "data": { "...": "..." }
@@ -828,8 +831,8 @@ export default function DocsPage() {
           </p>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Card>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <Card className="min-w-0">
             <CardHeader>
               <CardTitle>Payload and signature</CardTitle>
               <CardDescription>
@@ -837,9 +840,9 @@ export default function DocsPage() {
                 created or its secret is regenerated.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm leading-6 text-muted-foreground">
-              <pre className="overflow-x-auto rounded-lg bg-muted/50 p-3 font-mono text-xs leading-5 text-foreground">
-                <code>{`{
+            <CardContent className="min-w-0 space-y-3 text-sm leading-6 text-muted-foreground">
+              <pre className={`${CODE_PANEL_CLASS} rounded-lg bg-muted/50 p-3 font-mono text-xs leading-5 text-foreground`}>
+                <code className={CODE_CONTENT_CLASS}>{`{
   "id": "evt_123456",
   "type": "shipment.created",
   "createdAt": "2026-10-03T10:00:00.000Z",

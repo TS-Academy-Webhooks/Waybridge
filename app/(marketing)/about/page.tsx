@@ -87,17 +87,17 @@ export default function AboutPage() {
         </div>
 
         <div className="rounded-2xl border bg-card p-5 shadow-sm sm:p-7">
-          <div className="flex items-center justify-between gap-4 border-b pb-5">
-            <div className="flex items-center gap-3">
-              <span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">
+          <div className="flex flex-col items-start gap-3 border-b pb-5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
                 <PackageSearch aria-hidden="true" />
               </span>
-              <div>
-                <p className="font-semibold">One connected journey</p>
+              <div className="min-w-0">
+                <p className="font-semibold leading-tight">One connected journey</p>
                 <p className="text-sm text-muted-foreground">From pickup to delivery</p>
               </div>
             </div>
-            <span className="rounded-full bg-success/10 px-3 py-1 text-xs font-medium text-success">
+            <span className="self-start rounded-full bg-success/10 px-3 py-1 text-xs font-medium text-success sm:self-auto">
               In motion
             </span>
           </div>
