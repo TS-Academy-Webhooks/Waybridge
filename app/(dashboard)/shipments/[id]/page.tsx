@@ -10,6 +10,7 @@ import {
 import { formatDate, formatDateTime } from "@/lib/format-date";
 import { getShipment } from "@/lib/shipment-service";
 import { ApiRequestError } from "@/lib/server-fetch";
+import { getCurrentUser } from "@/lib/dal";
 import { DashboardBreadcrumbTitle } from "@/features/dashboard/components/dashboard-breadcrumbs";
 import {
   SHIPMENT_STATUS_BADGE_VARIANT,
@@ -24,7 +25,7 @@ export default async function ShipmentDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const [{ id }, user] = await Promise.all([params, getCurrentUser()]);
 
   let shipment;
   try {
@@ -51,7 +52,9 @@ export default async function ShipmentDetailPage({
           </h1>
           <p className="text-muted-foreground">{shipment.customer}</p>
         </div>
-        <UpdateStatusDialog shipmentId={shipment.id} currentStatus={status} />
+        {user?.role === "admin" ? (
+          <UpdateStatusDialog shipmentId={shipment.id} currentStatus={status} />
+        ) : null}
       </div>
 
       <Card>

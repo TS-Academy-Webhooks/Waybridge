@@ -63,7 +63,9 @@ export default async function DemoReceiverPage({
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Demo Receiver</h1>
         <p className="text-muted-foreground">
-          Inspect webhook requests and configure test responses without standing up your own server.
+          {isAdmin
+            ? "Inspect webhook requests and configure test responses without standing up your own server."
+            : "Use a hosted webhook receiver to test a webhook without standing up your own server."}
         </p>
       </div>
 
@@ -93,23 +95,16 @@ export default async function DemoReceiverPage({
         <AlertTitle>Test workflow</AlertTitle>
         <AlertDescription>
           Create an active webhook with this URL, then send a shipment event or use
-          &ldquo;Send test event&rdquo; from its details page. Refresh request history below to
-          inspect the payload and signature result. In production, the backend must be started
-          with <code className="mx-1 font-mono">ENABLE_DEMO_RECEIVER=true</code>.
+          &ldquo;Send test event&rdquo; from its details page.{" "}
+          {isAdmin
+            ? "Refresh request history below to inspect the payload and signature result."
+            : "View your delivery status on the Deliveries page."}{" "}
+          In production, the backend must be started with
+          <code className="mx-1 font-mono">ENABLE_DEMO_RECEIVER=true</code>.
         </AlertDescription>
       </Alert>
 
-      {!isAdmin ? (
-        <Alert>
-          <Info />
-          <AlertTitle>Admin access required</AlertTitle>
-          <AlertDescription>
-            Webhook deliveries can still be sent to the public receiver URL. Only admins can
-            inspect captured requests, clear history, or change response profiles; view your
-            delivery status on the Deliveries page.
-          </AlertDescription>
-        </Alert>
-      ) : loadError ? (
+      {isAdmin && loadError ? (
         <Alert>
           <Info />
           <AlertTitle>Unable to load receiver controls</AlertTitle>
@@ -120,7 +115,7 @@ export default async function DemoReceiverPage({
               : ""}
           </AlertDescription>
         </Alert>
-      ) : history && configuration ? (
+      ) : isAdmin && history && configuration ? (
         <>
           <DemoReceiverConfigForm
             key={JSON.stringify(configuration)}
